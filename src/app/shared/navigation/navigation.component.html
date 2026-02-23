@@ -16,11 +16,31 @@
           {{ item.label }}
         </a>
       </li>
-      <li>
+      <li *ngIf="isAuthenticated">
         <a routerLink="/tasks/new" routerLinkActive="active">
           <span class="nav-icon">➕</span>
           New Task
         </a>
+      </li>
+      
+      <!-- Authentication Links -->
+      <li *ngIf="!isAuthenticated" class="auth-links">
+        <a routerLink="/login" routerLinkActive="active">
+          <span class="nav-icon">🔐</span>
+          Login
+        </a>
+      </li>
+      <li *ngIf="!isAuthenticated">
+        <a routerLink="/register" routerLinkActive="active">
+          <span class="nav-icon">📝</span>
+          Register
+        </a>
+      </li>
+      
+      <!-- User Info and Logout -->
+      <li *ngIf="isAuthenticated" class="user-info">
+        <span class="user-email">{{ userEmail }}</span>
+        <button class="btn-logout" (click)="logout()">Logout</button>
       </li>
     </ul>
   </div>

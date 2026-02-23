@@ -1,0 +1,65 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <div class="auth-header">
+      <h1>Login</h1>
+      <p>Sign in to your account</p>
+    </div>
+
+    <!-- Error message -->
+    <div class="error-message" *ngIf="error">
+      <p>{{ error }}</p>
+    </div>
+
+    <!-- Login Form -->
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <!-- Email Field -->
+      <div class="form-group">
+        <label for="email">Email *</label>
+        <dx-text-box
+          formControlName="email"
+          placeholder="Enter your email"
+          type="email"
+          [isValid]="!hasError('email', 'required') && !hasError('email', 'email')">
+        </dx-text-box>
+        <div class="field-error" *ngIf="hasError('email', 'required') || hasError('email', 'email')">
+          {{ getErrorMessage('email') }}
+        </div>
+      </div>
+
+      <!-- Password Field -->
+      <div class="form-group">
+        <label for="password">Password *</label>
+        <dx-text-box
+          formControlName="password"
+          placeholder="Enter your password"
+          type="password"
+          mode="password"
+          [isValid]="!hasError('password', 'required') && !hasError('password', 'minlength')">
+        </dx-text-box>
+        <div class="field-error" *ngIf="hasError('password', 'required') || hasError('password', 'minlength')">
+          {{ getErrorMessage('password') }}
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="form-actions">
+        <dx-button
+          type="default"
+          text="Login"
+          [disabled]="loginForm.invalid || isLoading"
+          (onClick)="onSubmit()">
+        </dx-button>
+      </div>
+    </form>
+
+    <!-- Register Link -->
+    <div class="auth-footer">
+      <p>Don't have an account? <a (click)="goToRegister()">Register here</a></p>
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading-overlay" *ngIf="isLoading">
+      <p>Logging in...</p>
+    </div>
+  </div>
+</div>

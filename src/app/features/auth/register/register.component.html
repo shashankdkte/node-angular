@@ -1,0 +1,83 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <div class="auth-header">
+      <h1>Register</h1>
+      <p>Create a new account</p>
+    </div>
+
+    <!-- Error message -->
+    <div class="error-message" *ngIf="error">
+      <p>{{ error }}</p>
+    </div>
+
+    <!-- Register Form -->
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+      <!-- Email Field -->
+      <div class="form-group">
+        <label for="email">Email *</label>
+        <dx-text-box
+          formControlName="email"
+          placeholder="Enter your email"
+          type="email"
+          [isValid]="!hasError('email', 'required') && !hasError('email', 'email')">
+        </dx-text-box>
+        <div class="field-error" *ngIf="hasError('email', 'required') || hasError('email', 'email')">
+          {{ getErrorMessage('email') }}
+        </div>
+      </div>
+
+      <!-- Password Field -->
+      <div class="form-group">
+        <label for="password">Password *</label>
+        <dx-text-box
+          formControlName="password"
+          placeholder="Enter your password (min 6 characters)"
+          type="password"
+          mode="password"
+          [isValid]="!hasError('password', 'required') && !hasError('password', 'minlength')">
+        </dx-text-box>
+        <div class="field-error" *ngIf="hasError('password', 'required') || hasError('password', 'minlength')">
+          {{ getErrorMessage('password') }}
+        </div>
+      </div>
+
+      <!-- Confirm Password Field -->
+      <div class="form-group">
+        <label for="confirmPassword">Confirm Password *</label>
+        <dx-text-box
+          formControlName="confirmPassword"
+          placeholder="Confirm your password"
+          type="password"
+          mode="password"
+          [isValid]="!hasError('confirmPassword', 'required') && !hasPasswordMismatch()">
+        </dx-text-box>
+        <div class="field-error" *ngIf="hasError('confirmPassword', 'required')">
+          {{ getErrorMessage('confirmPassword') }}
+        </div>
+        <div class="field-error" *ngIf="hasPasswordMismatch()">
+          Passwords do not match
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="form-actions">
+        <dx-button
+          type="default"
+          text="Register"
+          [disabled]="registerForm.invalid || isLoading"
+          (onClick)="onSubmit()">
+        </dx-button>
+      </div>
+    </form>
+
+    <!-- Login Link -->
+    <div class="auth-footer">
+      <p>Already have an account? <a (click)="goToLogin()">Login here</a></p>
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading-overlay" *ngIf="isLoading">
+      <p>Creating account...</p>
+    </div>
+  </div>
+</div>
