@@ -1,0 +1,14 @@
+header {
+  margin-bottom: 30px;
+}
+
+.app-title {
+  color: #007bff;
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+main {
+  min-height: calc(100vh - 200px);
+}
