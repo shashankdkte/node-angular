@@ -7,7 +7,8 @@
     <div class="info-section">
       <p>Today is: <strong>{{ currentDate | date:'fullDate' }}</strong></p>
       <p>Current time: <strong>{{ currentDate | date:'shortTime' }}</strong></p>
-      <p>You have <strong>{{ taskCount }}</strong> tasks to complete.</p>
+      <!-- Using async pipe to subscribe to taskCount$ observable -->
+      <p>You have <strong>{{ taskCount$ | async }}</strong> tasks to complete.</p>
     </div>
     
     <div class="actions">

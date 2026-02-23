@@ -1,11 +1,12 @@
 <div class="task-list-container">
   <header class="task-header">
     <h1>{{ pageTitle }}</h1>
-    <p class="task-summary">
-      Total: <strong>{{ totalTasks }}</strong> tasks | 
-      Todo: <strong>{{ taskCounts['todo'] }}</strong> | 
-      Doing: <strong>{{ taskCounts['doing'] }}</strong> | 
-      Done: <strong>{{ taskCounts['done'] }}</strong>
+    <!-- Using async pipe with taskCounts$ observable -->
+    <p class="task-summary" *ngIf="taskCounts$ | async as counts">
+      Total: <strong>{{ totalTasks$ | async }}</strong> tasks | 
+      Todo: <strong>{{ counts.todo }}</strong> | 
+      Doing: <strong>{{ counts.doing }}</strong> | 
+      Done: <strong>{{ counts.done }}</strong>
     </p>
   </header>
 
@@ -27,18 +28,19 @@
         Clear
       </button>
     </div>
-    <p class="search-results" *ngIf="searchTerm">
+    <!-- Using async pipe with filteredTasks$ observable -->
+    <p class="search-results" *ngIf="searchTerm && (filteredTasks$ | async) as filteredTasks">
       Found <strong>{{ filteredTasks.length }}</strong> task(s) matching "{{ searchTerm }}"
     </p>
   </div>
 
-  <!-- *ngIf directive: Show loading state conditionally -->
-  <div class="loading-container" *ngIf="isLoading">
+  <!-- *ngIf directive: Show loading state conditionally using async pipe -->
+  <div class="loading-container" *ngIf="isLoading$ | async">
     <p class="loading-message">Loading tasks...</p>
   </div>
 
   <!-- *ngIf directive: Show tasks section only if not loading -->
-  <div class="tasks-section" *ngIf="!isLoading">
+  <div class="tasks-section" *ngIf="!(isLoading$ | async)">
     <div class="section-header">
       <h2>Task List</h2>
       <a routerLink="/tasks/new" class="btn btn-primary">
@@ -46,27 +48,52 @@
       </a>
     </div>
     
-    <!-- *ngIf directive: Show empty state if no tasks -->
-    <div class="empty-state" *ngIf="!hasTasks()">
-      <p class="empty-message">No tasks found. Create your first task to get started!</p>
+    <!-- Using async pipe: Show empty state if no tasks -->
+    <div class="empty-state" *ngIf="(tasks$ | async) as tasks; else loadingTasks">
+      <p class="empty-message" *ngIf="!hasTasks(tasks)">
+        No tasks found. Create your first task to get started!
+      </p>
     </div>
 
-    <!-- *ngIf directive: Show no search results -->
-    <div class="empty-state" *ngIf="hasTasks() && searchTerm && filteredTasks.length === 0">
-      <p class="empty-message">No tasks match your search "{{ searchTerm }}"</p>
-    </div>
+    <!-- Using async pipe: Show no search results -->
+    <ng-container *ngIf="searchTerm && (filteredTasks$ | async) as filteredTasks">
+      <div class="empty-state" *ngIf="filteredTasks.length === 0">
+        <p class="empty-message">No tasks match your search "{{ searchTerm }}"</p>
+      </div>
+    </ng-container>
 
-    <!-- *ngFor directive: Loop through filtered tasks -->
+    <!-- *ngFor directive: Loop through filtered tasks using async pipe -->
     <!-- Event binding: Listen to events from child component -->
-    <div class="tasks-grid" *ngIf="hasTasks() && (!searchTerm || filteredTasks.length > 0)">
-      <app-task-item 
-        *ngFor="let task of (searchTerm ? filteredTasks : tasks); let i = index" 
-        [task]="task"
-        [taskIndex]="i"
-        (deleteTask)="onDeleteTask($event)"
-        (editTask)="onEditTask($event)"
-        (statusChange)="onStatusChange($event)">
-      </app-task-item>
-    </div>
+    <ng-container *ngIf="searchTerm; else showAllTasks">
+      <div class="tasks-grid" *ngIf="(filteredTasks$ | async) as filteredTasks">
+        <app-task-item 
+          *ngFor="let task of filteredTasks; let i = index" 
+          [task]="task"
+          [taskIndex]="i"
+          (deleteTask)="onDeleteTask($event)"
+          (editTask)="onEditTask($event)"
+          (statusChange)="onStatusChange($event)">
+        </app-task-item>
+      </div>
+    </ng-container>
+    
+    <ng-template #showAllTasks>
+      <div class="tasks-grid" *ngIf="(tasks$ | async) as tasks">
+        <app-task-item 
+          *ngFor="let task of tasks; let i = index" 
+          [task]="task"
+          [taskIndex]="i"
+          (deleteTask)="onDeleteTask($event)"
+          (editTask)="onEditTask($event)"
+          (statusChange)="onStatusChange($event)">
+        </app-task-item>
+      </div>
+    </ng-template>
+    
+    <ng-template #loadingTasks>
+      <div class="empty-state">
+        <p class="empty-message">Loading tasks...</p>
+      </div>
+    </ng-template>
   </div>
 </div>

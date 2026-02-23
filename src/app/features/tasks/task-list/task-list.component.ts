@@ -1,10 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { Task } from '../../../shared/models/task.model';
 import { TaskItemComponent } from '../task-item/task-item.component';
 import { TaskService } from '../../../core/services/task.service';
+import { Observable, Subject, BehaviorSubject, combineLatest } from 'rxjs';
+import { takeUntil, startWith, map, switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-task-list',
@@ -13,100 +15,85 @@ import { TaskService } from '../../../core/services/task.service';
   templateUrl: './task-list.component.html',
   styleUrl: './task-list.component.css'
 })
-export class TaskListComponent implements OnInit {
+export class TaskListComponent implements OnInit, OnDestroy {
   // Properties for display
   pageTitle = 'My Tasks';
-  tasks: Task[] = [];
-  totalTasks = 0;
-  isLoading = false;
+  
+  // Observable properties for use with async pipe
+  tasks$: Observable<Task[]>;
+  filteredTasks$: Observable<Task[]>;
+  totalTasks$: Observable<number>;
+  taskCounts$: Observable<{ todo: number; doing: number; done: number }>;
+  isLoading$: Observable<boolean>;
+  
+  // Search term subject for reactive search
+  private searchTermSubject = new BehaviorSubject<string>('');
+  searchTerm$ = this.searchTermSubject.asObservable();
   
   // Two-way binding property for search filter
   searchTerm: string = '';
+  
+  // Subject for unsubscribing (takeUntil pattern)
+  private destroy$ = new Subject<void>();
   
   // Dependency Injection: TaskService is injected via constructor
   // Angular automatically provides the service instance
   constructor(private taskService: TaskService) {
     // Services are injected here
     // 'private' keyword creates a class property automatically
+    
+    // Initialize observables using RxJS operators
+    this.tasks$ = this.taskService.getAllTasks();
+    
+    // Create loading observable
+    this.isLoading$ = this.taskService.loading$;
+    
+    // Create filtered tasks observable with debounced search
+    // Use the reactive search method which handles debouncing internally
+    this.filteredTasks$ = this.taskService.searchTasksReactive(
+      this.searchTerm$.pipe(startWith(''))
+    );
+    
+    // Create total tasks count observable
+    this.totalTasks$ = this.tasks$.pipe(
+      map(tasks => tasks.length)
+    );
+    
+    // Create task counts observable using combineLatest
+    this.taskCounts$ = combineLatest([
+      this.taskService.getTaskCountByStatus('todo'),
+      this.taskService.getTaskCountByStatus('doing'),
+      this.taskService.getTaskCountByStatus('done')
+    ]).pipe(
+      map(([todo, doing, done]) => ({ todo, doing, done }))
+    );
   }
   
   // Lifecycle hook: Called after component initialization
   ngOnInit(): void {
-    this.loadTasks();
-    this.updateTaskCounts();
-    // Initialize filtered tasks
-    this.filteredTasks = this.tasks;
+    // Subscribe to search term changes from template
+    // This connects the two-way binding to the reactive search
   }
   
-  // Watch search term changes
+  // Lifecycle hook: Called when component is destroyed
+  ngOnDestroy(): void {
+    // Unsubscribe from all subscriptions using takeUntil pattern
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+  
+  // Watch search term changes - updates the subject
   onSearchChange(): void {
-    this.updateFilteredTasks();
+    this.searchTermSubject.next(this.searchTerm);
   }
   
-  // Load tasks from service - Now returns Observable
-  loadTasks(): void {
-    this.isLoading = true;
-    this.taskService.getAllTasks().subscribe({
-      next: (tasks) => {
-        this.tasks = tasks;
-        this.totalTasks = tasks.length;
-        this.isLoading = false;
-      },
-      error: (error) => {
-        console.error('Error loading tasks:', error);
-        alert('Failed to load tasks. Please try again.');
-        this.isLoading = false;
-      }
-    });
+  // Method to check if tasks array is empty - used in template
+  // Note: In template, use async pipe with *ngIf="(tasks$ | async)?.length"
+  hasTasks(tasks: Task[] | null): boolean {
+    return tasks ? tasks.length > 0 : false;
   }
   
-  // Filtered tasks based on search term - Now returns Observable
-  filteredTasks: Task[] = [];
-  
-  // Update filtered tasks when search term changes
-  updateFilteredTasks(): void {
-    if (!this.searchTerm.trim()) {
-      this.filteredTasks = this.tasks;
-      return;
-    }
-    
-    this.taskService.searchTasks(this.searchTerm).subscribe({
-      next: (tasks) => {
-        this.filteredTasks = tasks;
-      },
-      error: (error) => {
-        console.error('Error searching tasks:', error);
-        this.filteredTasks = [];
-      }
-    });
-  }
-  
-  // Method to get task count by status - Now returns Observable
-  taskCounts: { [key: string]: number } = {
-    todo: 0,
-    doing: 0,
-    done: 0
-  };
-  
-  updateTaskCounts(): void {
-    ['todo', 'doing', 'done'].forEach(status => {
-      this.taskService.getTaskCountByStatus(status).subscribe({
-        next: (count) => {
-          this.taskCounts[status] = count;
-        },
-        error: (error) => {
-          console.error(`Error getting count for ${status}:`, error);
-        }
-      });
-    });
-  }
-  
-  // Method to check if tasks array is empty
-  hasTasks(): boolean {
-    return this.tasks.length > 0;
-  }
-  
-  // Event handlers - use service methods with Observables
+  // Event handlers - use service methods with Observables and proper subscription management
   
   // Handle delete event from TaskItemComponent
   onDeleteTask(taskId: string): void {
@@ -114,11 +101,12 @@ export class TaskListComponent implements OnInit {
       return;
     }
     
-    this.taskService.deleteTask(taskId).subscribe({
+    this.taskService.deleteTask(taskId).pipe(
+      takeUntil(this.destroy$) // Auto-unsubscribe when component destroys
+    ).subscribe({
       next: (success) => {
         if (success) {
-          // Reload tasks after deletion
-          this.loadTasks();
+          // Cache is cleared automatically, tasks$ will update
           console.log(`Task ${taskId} deleted`);
         }
       },
@@ -140,10 +128,11 @@ export class TaskListComponent implements OnInit {
     this.taskService.updateTaskStatus(
       event.taskId,
       event.newStatus as 'todo' | 'doing' | 'done'
+    ).pipe(
+      takeUntil(this.destroy$) // Auto-unsubscribe when component destroys
     ).subscribe({
       next: (updatedTask) => {
-        // Reload tasks after status update
-        this.loadTasks();
+        // Cache is cleared automatically, tasks$ will update
         console.log(`Task ${event.taskId} status changed to ${event.newStatus}`);
       },
       error: (error) => {
@@ -156,6 +145,6 @@ export class TaskListComponent implements OnInit {
   // Clear search filter
   clearSearch(): void {
     this.searchTerm = '';
-    this.updateFilteredTasks();
+    this.searchTermSubject.next(''); // Update the subject
   }
 }

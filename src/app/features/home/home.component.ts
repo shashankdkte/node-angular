@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { TaskService } from '../../core/services/task.service';
 import { AuthService } from '../../core/services/auth.service';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-home',
@@ -16,7 +18,9 @@ export class HomeComponent implements OnInit {
   appName = 'Task Management App';
   welcomeMessage = 'Welcome to your task management system!';
   currentDate = new Date();
-  taskCount = 0;
+  
+  // Observable property for use with async pipe
+  taskCount$: Observable<number>;
   userEmail = '';
   
   // Dependency Injection: Inject multiple services via constructor
@@ -25,19 +29,15 @@ export class HomeComponent implements OnInit {
     private authService: AuthService
   ) {
     // Services are automatically injected by Angular
+    
+    // Use Observable directly - will be used with async pipe in template
+    this.taskCount$ = this.taskService.getTotalTaskCount();
   }
   
   // Lifecycle hook: Called after component initialization
   ngOnInit(): void {
-    // Use service methods to get data - Now returns Observable
-    this.taskService.getTotalTaskCount().subscribe({
-      next: (count) => {
-        this.taskCount = count;
-      },
-      error: (error) => {
-        console.error('Error loading task count:', error);
-      }
-    });
+    // No need to subscribe - using async pipe in template
+    // The async pipe automatically handles subscription and unsubscription
     
     this.userEmail = this.authService.getUserEmail();
     
