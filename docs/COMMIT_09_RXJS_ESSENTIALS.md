@@ -4,6 +4,34 @@
 
 This commit enhances the application with advanced RxJS operators and patterns. We implemented debounced search, caching with `shareReplay`, proper subscription management using `takeUntil`, and converted components to use the `async` pipe for automatic subscription handling.
 
+## 📊 Visual Overview
+
+```mermaid
+graph LR
+    A[Observable] -->|pipe| B[Operators]
+    B -->|debounceTime| C[Wait 300ms]
+    B -->|switchMap| D[Cancel old request]
+    B -->|shareReplay| E[Cache result]
+    B -->|takeUntil| F[Auto unsubscribe]
+    
+    G[async pipe] -->|Auto subscribe| A
+    G -->|Auto unsubscribe| H[Component destroy]
+    
+    style A fill:#2196F3,color:#fff
+    style B fill:#4CAF50,color:#fff
+    style C fill:#FF9800,color:#fff
+    style D fill:#9C27B0,color:#fff
+    style E fill:#E91E63,color:#fff
+    style F fill:#607D8B,color:#fff
+    style G fill:#795548,color:#fff
+    style H fill:#F44336,color:#fff
+```
+
+**What This Commit Teaches:**
+- RxJS Operators = Transform observables
+- debounceTime = Wait before action
+- async pipe = Auto subscribe/unsubscribe
+
 ## 🎯 Topic Focus: RxJS Essentials (10)
 
 **Key Concepts Learned:**

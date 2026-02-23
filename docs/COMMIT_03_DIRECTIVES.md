@@ -4,6 +4,32 @@
 
 This commit implements Angular directives to create dynamic, interactive UIs. We replaced hardcoded task displays with `*ngFor` loops, added conditional rendering with `*ngIf`, and applied dynamic styling with `[ngClass]`. We also created a reusable `TaskItemComponent` to display individual tasks.
 
+## 📊 Visual Overview
+
+```mermaid
+graph TD
+    A[Tasks Array] -->|Loop| B[*ngFor<br/>Show each task]
+    B -->|Condition| C[*ngIf<br/>Show if exists]
+    C -->|Style| D[ngClass<br/>Dynamic CSS]
+    D -->|Display| E[Task Cards]
+    
+    F[No Tasks?] -->|Yes| G[*ngIf else<br/>Show Empty Message]
+    F -->|No| B
+    
+    style A fill:#2196F3,color:#fff
+    style B fill:#4CAF50,color:#fff
+    style C fill:#FF9800,color:#fff
+    style D fill:#9C27B0,color:#fff
+    style E fill:#E91E63,color:#fff
+    style F fill:#607D8B,color:#fff
+    style G fill:#F44336,color:#fff
+```
+
+**What This Commit Teaches:**
+- `*ngFor` = Loop through arrays
+- `*ngIf` = Show/hide elements
+- `[ngClass]` = Dynamic styling
+
 ## 🎯 Topic Focus: Directives (04)
 
 **Key Concepts Learned:**

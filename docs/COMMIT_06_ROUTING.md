@@ -4,6 +4,32 @@
 
 This commit implements Angular routing to create a single-page application (SPA) with multiple views. We created `TaskDetailComponent` and `TaskFormComponent`, configured routes with parameters, added navigation menu, and implemented programmatic navigation using the Router service.
 
+## 📊 Visual Overview
+
+```mermaid
+graph LR
+    A[User clicks link] -->|routerLink| B[Router]
+    B -->|Matches route| C{Which route?}
+    C -->|/tasks| D[TaskListComponent]
+    C -->|/tasks/:id| E[TaskDetailComponent]
+    C -->|/tasks/new| F[TaskFormComponent]
+    
+    G[Programmatic Nav] -->|router.navigate| B
+    
+    style A fill:#2196F3,color:#fff
+    style B fill:#4CAF50,color:#fff
+    style C fill:#FF9800,color:#fff
+    style D fill:#9C27B0,color:#fff
+    style E fill:#E91E63,color:#fff
+    style F fill:#607D8B,color:#fff
+    style G fill:#795548,color:#fff
+```
+
+**What This Commit Teaches:**
+- Routes = Different URLs show different components
+- Route params = `/tasks/:id` gets ID from URL
+- Navigation = Click links or use Router service
+
 ## 🎯 Topic Focus: Routing (07)
 
 **Key Concepts Learned:**

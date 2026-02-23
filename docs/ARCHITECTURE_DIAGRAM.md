@@ -19,7 +19,7 @@ graph TB
         
         subgraph "Services"
             TaskService[TaskService - HttpClient API calls]
-            AuthService[AuthService - Authentication & JWT]
+            AuthService[AuthService - Authentication and JWT]
             TaskStateService[TaskStateService - BehaviorSubject State]
         end
         
@@ -36,8 +36,8 @@ graph TB
     
     subgraph "Backend - Node.js/Express"
         subgraph "Routes"
-            AuthRoutes[/api/auth - register, login]
-            TaskRoutes[/api/tasks - CRUD operations]
+            AuthRoutes[Auth Routes - register and login]
+            TaskRoutes[Task Routes - CRUD operations]
         end
         
         subgraph "Middleware"
@@ -53,7 +53,7 @@ graph TB
     end
     
     subgraph "Database"
-        MongoDB[(MongoDB - Task & User Collections)]
+        MongoDB[(MongoDB - Task and User Collections)]
     end
     
     %% Frontend connections

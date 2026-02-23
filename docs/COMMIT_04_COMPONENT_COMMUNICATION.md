@@ -4,6 +4,29 @@
 
 This commit implements parent-child component communication using `@Input()` and `@Output()` decorators. We added event handlers to `TaskItemComponent` that emit events to the parent `TaskListComponent`, and implemented a search filter using two-way binding with `[(ngModel)]`.
 
+## 📊 Visual Overview
+
+```mermaid
+graph LR
+    Parent[Parent Component] -->|@Input<br/>Pass data down| Child[Child Component]
+    Child -->|@Output<br/>Emit event up| Parent
+    
+    TwoWay[Two-Way Binding] -->|ngModel| Input[Input Field]
+    Input -->|User types| TwoWay
+    TwoWay -->|Updates| Component[Component Property]
+    
+    style Parent fill:#2196F3,color:#fff
+    style Child fill:#4CAF50,color:#fff
+    style TwoWay fill:#FF9800,color:#fff
+    style Input fill:#9C27B0,color:#fff
+    style Component fill:#E91E63,color:#fff
+```
+
+**What This Commit Teaches:**
+- `@Input()` = Parent → Child (data down)
+- `@Output()` = Child → Parent (events up)
+- `[(ngModel)]` = Two-way binding
+
 ## 🎯 Topic Focus: Component Communication (05)
 
 **Key Concepts Learned:**

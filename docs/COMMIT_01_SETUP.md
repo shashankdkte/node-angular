@@ -4,6 +4,25 @@
 
 This commit sets up DevExtreme UI library in the Angular application. DevExtreme is a comprehensive UI component library that we'll use throughout the project for building a modern, professional-looking interface.
 
+## 📊 Visual Overview
+
+```mermaid
+graph LR
+    A[Angular App] -->|Install| B[DevExtreme Library]
+    B -->|Add Styles| C[dx.light.css]
+    B -->|Configure| D[angular.json<br/>Bundle Budgets]
+    
+    style A fill:#2196F3,color:#fff
+    style B fill:#4CAF50,color:#fff
+    style C fill:#FF9800,color:#fff
+    style D fill:#9C27B0,color:#fff
+```
+
+**What This Commit Does:**
+- Installs DevExtreme UI library
+- Adds theme styles
+- Configures build settings
+
 ## 🎯 Topic Focus: Setup and Installation (Topic 01)
 
 **Key Concepts Learned:**

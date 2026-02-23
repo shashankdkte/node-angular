@@ -4,6 +4,34 @@
 
 This commit implements centralized state management using RxJS `BehaviorSubject`. We created a `TaskStateService` that manages all task data in a single source of truth, enabling automatic UI updates across all components. The service implements optimistic updates for better user experience.
 
+## 📊 Visual Overview
+
+```mermaid
+graph TD
+    A[TaskStateService] -->|BehaviorSubject| B[Single Source of Truth]
+    B -->|tasks$ Observable| C[Component 1]
+    B -->|tasks$ Observable| D[Component 2]
+    B -->|tasks$ Observable| E[Component 3]
+    
+    F[User Action] -->|Update| A
+    A -->|Emit new state| B
+    B -->|Auto update| C
+    B -->|Auto update| D
+    B -->|Auto update| E
+    
+    style A fill:#2196F3,color:#fff
+    style B fill:#4CAF50,color:#fff
+    style C fill:#FF9800,color:#fff
+    style D fill:#9C27B0,color:#fff
+    style E fill:#E91E63,color:#fff
+    style F fill:#607D8B,color:#fff
+```
+
+**What This Commit Teaches:**
+- BehaviorSubject = State container
+- Single source of truth
+- All components get updates automatically
+
 ## 🎯 Topic Focus: State Management (11)
 
 **Key Concepts Learned:**

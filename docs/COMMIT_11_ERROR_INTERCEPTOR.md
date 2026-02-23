@@ -4,6 +4,29 @@
 
 This commit creates a global HTTP error interceptor that catches all HTTP errors, maps them to user-friendly messages, and handles authentication errors automatically. This provides a consistent error handling experience across the entire application.
 
+## 📊 Visual Overview
+
+```mermaid
+sequenceDiagram
+    participant C as Component
+    participant S as Service
+    participant I as Error Interceptor
+    participant API as Backend
+    
+    C->>S: Request
+    S->>I: HTTP Request
+    I->>API: Send request
+    API-->>I: Error Response
+    I->>I: Catch error
+    I->>I: Transform to user message
+    I-->>C: Show friendly error
+```
+
+**What This Commit Teaches:**
+- Error Interceptor = Catch all errors
+- Transform technical errors
+- Show user-friendly messages
+
 ## 🎯 Topic Focus: HTTP Interceptors & Error Handling (Advanced)
 
 **Key Concepts Learned:**

@@ -4,6 +4,30 @@
 
 This commit creates an HTTP interceptor that automatically adds the JWT authentication token to all HTTP requests. This fixes the "UNAUTHORIZED" errors when calling the tasks API and ensures authenticated requests work seamlessly.
 
+## 📊 Visual Overview
+
+```mermaid
+sequenceDiagram
+    participant C as Component
+    participant S as Service
+    participant I as Interceptor
+    participant API as Backend
+    
+    C->>S: Make request
+    S->>I: HTTP Request
+    I->>I: Get token from storage
+    I->>I: Add Authorization header
+    I->>API: Request with token
+    API-->>I: Response
+    I-->>S: Pass through
+    S-->>C: Data
+```
+
+**What This Commit Teaches:**
+- Interceptors = Middleware for HTTP
+- Auto-add token to all requests
+- No need to add token manually
+
 ## 🎯 Topic Focus: HTTP Interceptors (Advanced)
 
 **Key Concepts Learned:**

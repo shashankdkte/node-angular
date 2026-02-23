@@ -4,6 +4,33 @@
 
 This commit introduces Angular services and dependency injection. We created `TaskService` and `AuthService` to manage business logic and data, moving it out of components. Components now use dependency injection to access these services, following Angular best practices.
 
+## 📊 Visual Overview
+
+```mermaid
+graph TD
+    A[Component] -->|Asks for| B[Service]
+    B -->|Injected via| C[Constructor]
+    C -->|Angular provides| D[Singleton Instance]
+    
+    E[TaskService] -->|Manages| F[Task Data]
+    G[AuthService] -->|Manages| H[User Data]
+    
+    A -->|Uses| E
+    A -->|Uses| G
+    
+    style A fill:#2196F3,color:#fff
+    style B fill:#4CAF50,color:#fff
+    style C fill:#FF9800,color:#fff
+    style D fill:#9C27B0,color:#fff
+    style E fill:#E91E63,color:#fff
+    style G fill:#607D8B,color:#fff
+```
+
+**What This Commit Teaches:**
+- Services = Business logic outside components
+- Dependency Injection = Angular provides services
+- Singleton = One instance shared everywhere
+
 ## 🎯 Topic Focus: Services and Dependency Injection (06)
 
 **Key Concepts Learned:**

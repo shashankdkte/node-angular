@@ -4,6 +4,37 @@
 
 This commit creates reusable UI components (LoadingSpinner, ConfirmDialog, ErrorMessage) and integrates them throughout the application. This provides a consistent, professional user experience with better loading states, confirmation dialogs, and error handling.
 
+## 📊 Visual Overview
+
+```mermaid
+graph TD
+    A[Reusable Components] --> B[LoadingSpinner]
+    A --> C[ConfirmDialog]
+    A --> D[ErrorMessage]
+    
+    E[Any Component] -->|Uses| B
+    E -->|Uses| C
+    E -->|Uses| D
+    
+    B -->|Shows| F[Loading State]
+    C -->|Shows| G[Confirmation]
+    D -->|Shows| H[Error Message]
+    
+    style A fill:#2196F3,color:#fff
+    style B fill:#4CAF50,color:#fff
+    style C fill:#FF9800,color:#fff
+    style D fill:#9C27B0,color:#fff
+    style E fill:#E91E63,color:#fff
+    style F fill:#607D8B,color:#fff
+    style G fill:#795548,color:#fff
+    style H fill:#F44336,color:#fff
+```
+
+**What This Commit Teaches:**
+- Reusable components = Use anywhere
+- Loading states = Show progress
+- Error messages = User-friendly errors
+
 ## 🎯 Topic Focus: UI Components & User Experience (12)
 
 **Key Concepts Learned:**

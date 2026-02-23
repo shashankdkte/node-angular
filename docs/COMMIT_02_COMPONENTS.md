@@ -4,6 +4,27 @@
 
 This commit introduces the core Angular concepts: components, templates, and template interpolation. We created two feature components (`HomeComponent` and `TaskListComponent`) that demonstrate how to display data using interpolation syntax.
 
+## 📊 Visual Overview
+
+```mermaid
+graph TD
+    A[Component.ts<br/>Properties & Methods] -->|Data| B[Component.html<br/>Template]
+    B -->|Display| C[{{ property }}<br/>Interpolation]
+    C -->|Transform| D[Pipe<br/>date, uppercase]
+    D -->|Show| E[User Sees Data]
+    
+    style A fill:#2196F3,color:#fff
+    style B fill:#4CAF50,color:#fff
+    style C fill:#FF9800,color:#fff
+    style D fill:#9C27B0,color:#fff
+    style E fill:#E91E63,color:#fff
+```
+
+**What This Commit Teaches:**
+- Component = TypeScript + HTML + CSS
+- Interpolation `{{ }}` = Display data
+- Pipes = Transform data
+
 ## 🎯 Topic Focus: Angular Core Concepts (02) + Basic Syntax (03)
 
 **Key Concepts Learned:**

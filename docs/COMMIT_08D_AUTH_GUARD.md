@@ -4,6 +4,32 @@
 
 This commit creates an authentication guard that protects routes requiring user authentication. Users must be logged in to access task-related pages. If not authenticated, they are automatically redirected to the login page.
 
+## 📊 Visual Overview
+
+```mermaid
+flowchart TD
+    A[User tries to visit /tasks] -->|Router checks| B[AuthGuard]
+    B -->|Has token?| C{Yes or No?}
+    C -->|Yes ✅| D[Allow access]
+    C -->|No ❌| E[Redirect to login]
+    
+    D --> F[Show Tasks Page]
+    E --> G[Login Page]
+    
+    style A fill:#2196F3,color:#fff
+    style B fill:#FF9800,color:#fff
+    style C fill:#9C27B0,color:#fff
+    style D fill:#4CAF50,color:#fff
+    style E fill:#F44336,color:#fff
+    style F fill:#4CAF50,color:#fff
+    style G fill:#FF9800,color:#fff
+```
+
+**What This Commit Teaches:**
+- Guards = Security for routes
+- Check authentication before access
+- Redirect if not logged in
+
 ## 🎯 Topic Focus: Route Guards (Advanced)
 
 **Key Concepts Learned:**

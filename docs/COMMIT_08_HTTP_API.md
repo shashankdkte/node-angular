@@ -4,6 +4,29 @@
 
 This commit integrates the Angular application with the backend API using `HttpClient`. We converted all service methods from synchronous mock data to asynchronous HTTP calls, implemented proper error handling, and updated all components to work with Observables.
 
+## 📊 Visual Overview
+
+```mermaid
+sequenceDiagram
+    participant C as Component
+    participant S as Service
+    participant API as Backend API
+    participant DB as Database
+    
+    C->>S: Request data
+    S->>API: HTTP GET/POST
+    API->>DB: Query data
+    DB-->>API: Return data
+    API-->>S: JSON Response
+    S-->>C: Observable
+    C->>C: Subscribe & Display
+```
+
+**What This Commit Teaches:**
+- HttpClient = Make HTTP requests
+- Observables = Async data streams
+- Subscribe = Get data when ready
+
 ## 🎯 Topic Focus: HTTP and APIs (09)
 
 **Key Concepts Learned:**

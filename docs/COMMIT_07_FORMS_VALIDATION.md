@@ -4,6 +4,35 @@
 
 This commit implements reactive forms with comprehensive validation using DevExtreme UI components. We converted the template-driven form to a reactive form with `FormBuilder`, added validators, integrated DevExtreme form components, and implemented proper error handling and validation messages.
 
+## 📊 Visual Overview
+
+```mermaid
+graph TD
+    A[FormBuilder] -->|Creates| B[FormGroup]
+    B -->|Contains| C[FormControls]
+    C -->|Has| D[Validators]
+    
+    E[User Input] -->|Updates| C
+    D -->|Checks| E
+    D -->|Valid?| F{Yes/No}
+    F -->|Yes| G[Submit Enabled]
+    F -->|No| H[Show Errors]
+    
+    style A fill:#2196F3,color:#fff
+    style B fill:#4CAF50,color:#fff
+    style C fill:#FF9800,color:#fff
+    style D fill:#9C27B0,color:#fff
+    style E fill:#E91E63,color:#fff
+    style F fill:#607D8B,color:#fff
+    style G fill:#4CAF50,color:#fff
+    style H fill:#F44336,color:#fff
+```
+
+**What This Commit Teaches:**
+- Reactive Forms = Forms controlled by code
+- Validators = Rules for input (required, minLength, etc.)
+- FormGroup = Container for form fields
+
 ## 🎯 Topic Focus: Forms (08)
 
 **Key Concepts Learned:**

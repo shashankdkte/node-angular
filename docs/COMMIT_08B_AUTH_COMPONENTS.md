@@ -4,6 +4,34 @@
 
 This commit completes the authentication functionality by creating Login and Register components with reactive forms, validation, and integration with the AuthService. Users can now register new accounts and login to access the application.
 
+## 📊 Visual Overview
+
+```mermaid
+graph TD
+    A[User] -->|Fills form| B[Login Component]
+    B -->|Validates| C[Form Validators]
+    C -->|Valid| D[AuthService.login]
+    D -->|HTTP POST| E[Backend API]
+    E -->|Returns| F[JWT Token]
+    F -->|Save| G[localStorage]
+    G -->|Navigate| H[Tasks Page]
+    
+    style A fill:#2196F3,color:#fff
+    style B fill:#4CAF50,color:#fff
+    style C fill:#FF9800,color:#fff
+    style D fill:#9C27B0,color:#fff
+    style E fill:#E91E63,color:#fff
+    style F fill:#607D8B,color:#fff
+    style G fill:#795548,color:#fff
+    style H fill:#4CAF50,color:#fff
+```
+
+**What This Commit Teaches:**
+- Login/Register forms
+- Form validation
+- JWT token storage
+- Navigation after login
+
 ## 🎯 Topic Focus: Forms + HTTP Integration
 
 **Key Concepts Learned:**
