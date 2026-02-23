@@ -23,5 +23,27 @@
         ⚠️ Overdue
       </span>
     </div>
+    
+    <!-- Action buttons - emit events to parent -->
+    <div class="task-actions">
+      <button 
+        class="btn btn-primary btn-sm" 
+        (click)="onStatusChange(getNextStatus())"
+        title="Change status">
+        Change Status
+      </button>
+      <button 
+        class="btn btn-secondary btn-sm" 
+        (click)="onEdit()"
+        title="Edit task">
+        Edit
+      </button>
+      <button 
+        class="btn btn-danger btn-sm" 
+        (click)="onDelete()"
+        title="Delete task">
+        Delete
+      </button>
+    </div>
   </div>
 </div>

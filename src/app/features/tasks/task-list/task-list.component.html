@@ -9,6 +9,28 @@
     </p>
   </header>
 
+  <!-- Search filter with two-way binding using [(ngModel)] -->
+  <div class="search-section">
+    <div class="search-box">
+      <label for="search">Search Tasks:</label>
+      <input 
+        type="text" 
+        id="search"
+        [(ngModel)]="searchTerm"
+        placeholder="Search by title or description..."
+        class="search-input">
+      <button 
+        class="btn btn-secondary btn-sm" 
+        (click)="clearSearch()"
+        *ngIf="searchTerm">
+        Clear
+      </button>
+    </div>
+    <p class="search-results" *ngIf="searchTerm">
+      Found <strong>{{ filteredTasks.length }}</strong> task(s) matching "{{ searchTerm }}"
+    </p>
+  </div>
+
   <!-- *ngIf directive: Show loading state conditionally -->
   <div class="loading-container" *ngIf="isLoading">
     <p class="loading-message">Loading tasks...</p>
@@ -23,13 +45,21 @@
       <p class="empty-message">No tasks found. Create your first task to get started!</p>
     </div>
 
-    <!-- *ngFor directive: Loop through tasks array and display each task -->
-    <!-- *ngIf directive: Only show task list if tasks exist -->
-    <div class="tasks-grid" *ngIf="hasTasks()">
+    <!-- *ngIf directive: Show no search results -->
+    <div class="empty-state" *ngIf="hasTasks() && searchTerm && filteredTasks.length === 0">
+      <p class="empty-message">No tasks match your search "{{ searchTerm }}"</p>
+    </div>
+
+    <!-- *ngFor directive: Loop through filtered tasks -->
+    <!-- Event binding: Listen to events from child component -->
+    <div class="tasks-grid" *ngIf="hasTasks() && (!searchTerm || filteredTasks.length > 0)">
       <app-task-item 
-        *ngFor="let task of tasks; let i = index" 
+        *ngFor="let task of (searchTerm ? filteredTasks : tasks); let i = index" 
         [task]="task"
-        [taskIndex]="i">
+        [taskIndex]="i"
+        (deleteTask)="onDeleteTask($event)"
+        (editTask)="onEditTask($event)"
+        (statusChange)="onStatusChange($event)">
       </app-task-item>
     </div>
   </div>
