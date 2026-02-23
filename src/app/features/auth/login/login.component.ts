@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { DxTextBoxModule, DxButtonModule, DxValidatorModule } from 'devextreme-angular';
 
@@ -27,7 +27,8 @@ export class LoginComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {
     this.initializeForm();
   }
@@ -94,8 +95,10 @@ export class LoginComponent implements OnInit {
       next: (user) => {
         console.log('Login successful:', user);
         this.isLoading = false;
-        // Redirect to tasks page
-        this.router.navigate(['/tasks']);
+        
+        // Get return URL from route parameters or default to '/tasks'
+        const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/tasks';
+        this.router.navigate([returnUrl]);
       },
       error: (error) => {
         console.error('Login error:', error);
