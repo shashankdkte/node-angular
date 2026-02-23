@@ -1,1 +1,58 @@
-<p>task-list works!</p>
+<div class="task-list-container">
+  <header class="task-header">
+    <h1>{{ pageTitle }}</h1>
+    <p class="task-summary">
+      Total: <strong>{{ totalTasks }}</strong> tasks | 
+      Todo: <strong>{{ getTaskCountByStatus('todo') }}</strong> | 
+      Doing: <strong>{{ getTaskCountByStatus('doing') }}</strong> | 
+      Done: <strong>{{ getTaskCountByStatus('done') }}</strong>
+    </p>
+  </header>
+
+  <div class="tasks-section">
+    <h2>Task List</h2>
+    
+    <!-- Demonstrating interpolation with first task -->
+    <!-- We'll learn *ngFor in Step 3 to display all tasks -->
+    <div class="task-item">
+      <div class="task-content">
+        <h3>{{ tasks[0].title }}</h3>
+        <p class="task-description">{{ tasks[0].description }}</p>
+        <div class="task-meta">
+          <span class="task-status">Status: {{ tasks[0].status }}</span>
+          <span class="task-date">
+            Due: {{ tasks[0].dueDate | date:'shortDate' }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Second task example -->
+    <div class="task-item">
+      <div class="task-content">
+        <h3>{{ tasks[1].title }}</h3>
+        <p class="task-description">{{ tasks[1].description }}</p>
+        <div class="task-meta">
+          <span class="task-status">Status: {{ tasks[1].status }}</span>
+          <span class="task-date" *ngIf="tasks[1].dueDate">
+            Due: {{ tasks[1].dueDate | date:'shortDate' }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Third task example -->
+    <div class="task-item">
+      <div class="task-content">
+        <h3>{{ tasks[2].title }}</h3>
+        <p class="task-description">{{ tasks[2].description }}</p>
+        <div class="task-meta">
+          <span class="task-status">Status: {{ tasks[2].status }}</span>
+          <span class="task-date" *ngIf="tasks[2].dueDate">
+            Due: {{ tasks[2].dueDate | date:'shortDate' }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

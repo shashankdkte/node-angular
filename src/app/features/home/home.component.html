@@ -1,0 +1,17 @@
+<div class="home-container">
+  <div class="welcome-card">
+    <h1>{{ appName }}</h1>
+    <p class="greeting">{{ getGreeting() }}, welcome!</p>
+    <p class="message">{{ welcomeMessage }}</p>
+    
+    <div class="info-section">
+      <p>Today is: <strong>{{ currentDate | date:'fullDate' }}</strong></p>
+      <p>Current time: <strong>{{ currentDate | date:'shortTime' }}</strong></p>
+      <p>You have <strong>{{ taskCount }}</strong> tasks to complete.</p>
+    </div>
+    
+    <div class="actions">
+      <p>Get started by viewing your <a routerLink="/tasks">tasks</a>.</p>
+    </div>
+  </div>
+</div>

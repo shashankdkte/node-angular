@@ -1,0 +1,63 @@
+.home-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.welcome-card {
+  background: white;
+  border-radius: 12px;
+  padding: 40px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+h1 {
+  color: #007bff;
+  margin-bottom: 20px;
+  font-size: 32px;
+}
+
+.greeting {
+  font-size: 20px;
+  color: #333;
+  margin-bottom: 15px;
+  font-weight: 500;
+}
+
+.message {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 30px;
+}
+
+.info-section {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 30px 0;
+  text-align: left;
+}
+
+.info-section p {
+  margin: 10px 0;
+  color: #495057;
+}
+
+.info-section strong {
+  color: #007bff;
+}
+
+.actions {
+  margin-top: 30px;
+}
+
+.actions a {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.actions a:hover {
+  text-decoration: underline;
+}
