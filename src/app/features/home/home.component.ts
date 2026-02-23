@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { TaskService } from '../../core/services/task.service';
+import { TaskStateService } from '../../state/task-state.service';
 import { AuthService } from '../../core/services/auth.service';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-home',
@@ -25,13 +24,14 @@ export class HomeComponent implements OnInit {
   
   // Dependency Injection: Inject multiple services via constructor
   constructor(
-    private taskService: TaskService,
+    private taskStateService: TaskStateService,
     private authService: AuthService
   ) {
     // Services are automatically injected by Angular
     
-    // Use Observable directly - will be used with async pipe in template
-    this.taskCount$ = this.taskService.getTotalTaskCount();
+    // Use Observable from state service - will be used with async pipe in template
+    // State service provides reactive task count
+    this.taskCount$ = this.taskStateService.getTotalTaskCount();
   }
   
   // Lifecycle hook: Called after component initialization

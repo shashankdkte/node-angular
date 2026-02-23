@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { TaskStateService } from '../../../state/task-state.service';
 import { TaskService } from '../../../core/services/task.service';
 import { Task } from '../../../shared/models/task.model';
 
@@ -19,10 +20,12 @@ export class TaskDetailComponent implements OnInit {
 
   // Inject ActivatedRoute to get route parameters
   // Inject Router for navigation
-  // Inject TaskService to get task data
+  // Inject TaskStateService for state management
+  // Inject TaskService as fallback for loading task
   constructor(
     private route: ActivatedRoute,
     private router: Router,
+    private taskStateService: TaskStateService,
     private taskService: TaskService
   ) {}
 
@@ -47,6 +50,16 @@ export class TaskDetailComponent implements OnInit {
     this.isLoading = true;
     this.error = null;
 
+    // First, try to get task from state (faster, no API call needed)
+    const taskFromState = this.taskStateService.getTaskById(id);
+    if (taskFromState) {
+      this.task = taskFromState;
+      this.isLoading = false;
+      return;
+    }
+
+    // If not in state, load from API
+    // This can happen if user navigates directly to detail URL
     this.taskService.getTaskById(id).subscribe({
       next: (task) => {
         this.task = task;
@@ -73,6 +86,7 @@ export class TaskDetailComponent implements OnInit {
   }
 
   // Delete task and navigate back
+  // State service handles optimistic updates automatically
   deleteTask(): void {
     if (!this.taskId) return;
     
@@ -80,9 +94,10 @@ export class TaskDetailComponent implements OnInit {
       return;
     }
 
-    this.taskService.deleteTask(this.taskId).subscribe({
+    this.taskStateService.deleteTask(this.taskId).subscribe({
       next: (success) => {
         if (success) {
+          // State is updated automatically, navigate to list
           this.router.navigate(['/tasks']);
         }
       },

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { TaskStateService } from '../../../state/task-state.service';
 import { TaskService } from '../../../core/services/task.service';
 import { Task } from '../../../shared/models/task.model';
 import { DxTextBoxModule, DxTextAreaModule, DxSelectBoxModule, DxDateBoxModule, DxButtonModule, DxValidatorModule } from 'devextreme-angular';
@@ -42,7 +43,8 @@ export class TaskFormComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private taskService: TaskService,
+    private taskStateService: TaskStateService,
+    private taskService: TaskService, // Still needed for getTaskById in edit mode
     private fb: FormBuilder // FormBuilder for creating reactive forms
   ) {
     // Initialize form with FormBuilder
@@ -147,14 +149,16 @@ export class TaskFormComponent implements OnInit {
     const formValue = this.taskForm.value;
 
     if (this.isEditMode && this.taskId) {
-      // Update existing task
-      this.taskService.updateTask(this.taskId, {
+      // Update existing task using state service
+      // State service handles optimistic updates automatically
+      this.taskStateService.updateTask(this.taskId, {
         title: formValue.title.trim(),
         description: formValue.description?.trim() || '',
         status: formValue.status,
         dueDate: formValue.dueDate || null
       }).subscribe({
         next: (updatedTask) => {
+          // State is updated automatically, navigate to detail view
           this.router.navigate(['/tasks', this.taskId]);
           this.isSubmitting = false;
         },
@@ -165,14 +169,16 @@ export class TaskFormComponent implements OnInit {
         }
       });
     } else {
-      // Create new task
-      this.taskService.createTask({
+      // Create new task using state service
+      // State service handles optimistic updates automatically
+      this.taskStateService.createTask({
         title: formValue.title.trim(),
         description: formValue.description?.trim() || '',
         status: formValue.status,
         dueDate: formValue.dueDate || null
       }).subscribe({
         next: (newTask) => {
+          // State is updated automatically, navigate to detail view
           this.router.navigate(['/tasks', newTask._id]);
           this.isSubmitting = false;
         },

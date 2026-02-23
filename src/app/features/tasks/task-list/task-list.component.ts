@@ -4,9 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { Task } from '../../../shared/models/task.model';
 import { TaskItemComponent } from '../task-item/task-item.component';
-import { TaskService } from '../../../core/services/task.service';
+import { TaskStateService } from '../../../state/task-state.service';
 import { Observable, Subject, BehaviorSubject, combineLatest } from 'rxjs';
-import { takeUntil, startWith, map, switchMap } from 'rxjs/operators';
+import { takeUntil, startWith, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-task-list',
@@ -36,37 +36,42 @@ export class TaskListComponent implements OnInit, OnDestroy {
   // Subject for unsubscribing (takeUntil pattern)
   private destroy$ = new Subject<void>();
   
-  // Dependency Injection: TaskService is injected via constructor
+  // Dependency Injection: TaskStateService is injected via constructor
   // Angular automatically provides the service instance
-  constructor(private taskService: TaskService) {
+  constructor(private taskStateService: TaskStateService) {
     // Services are injected here
     // 'private' keyword creates a class property automatically
     
-    // Initialize observables using RxJS operators
-    this.tasks$ = this.taskService.getAllTasks();
+    // Get observables from state service
+    // State service manages all task data centrally
+    this.tasks$ = this.taskStateService.tasks$;
     
-    // Create loading observable
-    this.isLoading$ = this.taskService.loading$;
+    // Get loading state from state service
+    this.isLoading$ = this.taskStateService.loading$;
     
-    // Create filtered tasks observable with debounced search
-    // Use the reactive search method which handles debouncing internally
-    this.filteredTasks$ = this.taskService.searchTasksReactive(
+    // Create filtered tasks observable with search
+    // Combine tasks$ and searchTerm$ to react to both changes
+    this.filteredTasks$ = combineLatest([
+      this.tasks$,
       this.searchTerm$.pipe(startWith(''))
-    );
-    
-    // Create total tasks count observable
-    this.totalTasks$ = this.tasks$.pipe(
-      map(tasks => tasks.length)
-    );
-    
-    // Create task counts observable using combineLatest
-    this.taskCounts$ = combineLatest([
-      this.taskService.getTaskCountByStatus('todo'),
-      this.taskService.getTaskCountByStatus('doing'),
-      this.taskService.getTaskCountByStatus('done')
     ]).pipe(
-      map(([todo, doing, done]) => ({ todo, doing, done }))
+      map(([tasks, searchTerm]) => {
+        if (!searchTerm.trim()) {
+          return tasks;
+        }
+        const lowerTerm = searchTerm.toLowerCase();
+        return tasks.filter(task =>
+          task.title.toLowerCase().includes(lowerTerm) ||
+          task.description.toLowerCase().includes(lowerTerm)
+        );
+      })
     );
+    
+    // Get total tasks count from state service
+    this.totalTasks$ = this.taskStateService.getTotalTaskCount();
+    
+    // Get task counts from state service
+    this.taskCounts$ = this.taskStateService.getTaskCounts();
   }
   
   // Lifecycle hook: Called after component initialization
@@ -96,17 +101,19 @@ export class TaskListComponent implements OnInit, OnDestroy {
   // Event handlers - use service methods with Observables and proper subscription management
   
   // Handle delete event from TaskItemComponent
+  // State service handles optimistic updates automatically
   onDeleteTask(taskId: string): void {
     if (!confirm('Are you sure you want to delete this task?')) {
       return;
     }
     
-    this.taskService.deleteTask(taskId).pipe(
+    this.taskStateService.deleteTask(taskId).pipe(
       takeUntil(this.destroy$) // Auto-unsubscribe when component destroys
     ).subscribe({
       next: (success) => {
         if (success) {
-          // Cache is cleared automatically, tasks$ will update
+          // State is updated automatically via BehaviorSubject
+          // UI updates reactively without manual refresh
           console.log(`Task ${taskId} deleted`);
         }
       },
@@ -124,15 +131,17 @@ export class TaskListComponent implements OnInit, OnDestroy {
   }
   
   // Handle status change event from TaskItemComponent
+  // State service handles optimistic updates automatically
   onStatusChange(event: { taskId: string; newStatus: string }): void {
-    this.taskService.updateTaskStatus(
+    this.taskStateService.updateTaskStatus(
       event.taskId,
       event.newStatus as 'todo' | 'doing' | 'done'
     ).pipe(
       takeUntil(this.destroy$) // Auto-unsubscribe when component destroys
     ).subscribe({
       next: (updatedTask) => {
-        // Cache is cleared automatically, tasks$ will update
+        // State is updated automatically via BehaviorSubject
+        // UI updates reactively without manual refresh
         console.log(`Task ${event.taskId} status changed to ${event.newStatus}`);
       },
       error: (error) => {
