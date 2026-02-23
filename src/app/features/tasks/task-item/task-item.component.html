@@ -1,7 +1,11 @@
 <div class="task-item" [ngClass]="getStatusClass()">
   <div class="task-content">
     <div class="task-header-row">
-      <h3 class="task-title">{{ task.title }}</h3>
+      <h3 class="task-title">
+        <a [routerLink]="['/tasks', task._id]" class="task-link">
+          {{ task.title }}
+        </a>
+      </h3>
       <span class="task-number">#{{ taskIndex + 1 }}</span>
     </div>
     
@@ -26,6 +30,12 @@
     
     <!-- Action buttons - emit events to parent -->
     <div class="task-actions">
+      <a 
+        [routerLink]="['/tasks', task._id]"
+        class="btn btn-secondary btn-sm"
+        title="View details">
+        View
+      </a>
       <button 
         class="btn btn-primary btn-sm" 
         (click)="onStatusChange(getNextStatus())"

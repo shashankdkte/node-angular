@@ -98,12 +98,19 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.tasks-section h2 {
-  color: #333;
-  margin: 0 0 20px 0;
-  font-size: 22px;
-  border-bottom: 2px solid #e9ecef;
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
   padding-bottom: 10px;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.section-header h2 {
+  color: #333;
+  margin: 0;
+  font-size: 22px;
 }
 
 /* Empty state - shown with *ngIf when no tasks */

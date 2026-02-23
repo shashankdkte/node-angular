@@ -1,11 +1,12 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { Task } from '../../../shared/models/task.model';
 
 @Component({
   selector: 'app-task-item',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './task-item.component.html',
   styleUrl: './task-item.component.css'
 })

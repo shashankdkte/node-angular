@@ -38,7 +38,12 @@
 
   <!-- *ngIf directive: Show tasks section only if not loading -->
   <div class="tasks-section" *ngIf="!isLoading">
-    <h2>Task List</h2>
+    <div class="section-header">
+      <h2>Task List</h2>
+      <a routerLink="/tasks/new" class="btn btn-primary">
+        ➕ Create New Task
+      </a>
+    </div>
     
     <!-- *ngIf directive: Show empty state if no tasks -->
     <div class="empty-state" *ngIf="!hasTasks()">

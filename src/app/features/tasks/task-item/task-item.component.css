@@ -41,11 +41,21 @@
 }
 
 .task-title {
-  color: #333;
   margin: 0;
   font-size: 18px;
   font-weight: 600;
   flex: 1;
+}
+
+.task-link {
+  color: #333;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.task-link:hover {
+  color: #007bff;
+  text-decoration: underline;
 }
 
 .task-number {

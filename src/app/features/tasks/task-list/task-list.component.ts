@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { Task } from '../../../shared/models/task.model';
 import { TaskItemComponent } from '../task-item/task-item.component';
 import { TaskService } from '../../../core/services/task.service';
@@ -8,7 +9,7 @@ import { TaskService } from '../../../core/services/task.service';
 @Component({
   selector: 'app-task-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, TaskItemComponent],
+  imports: [CommonModule, FormsModule, RouterModule, TaskItemComponent],
   templateUrl: './task-list.component.html',
   styleUrl: './task-list.component.css'
 })

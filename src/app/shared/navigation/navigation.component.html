@@ -1,0 +1,27 @@
+<nav class="navigation">
+  <div class="nav-container">
+    <div class="nav-brand">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+        Task App
+      </a>
+    </div>
+    
+    <ul class="nav-menu">
+      <li *ngFor="let item of navItems">
+        <a 
+          [routerLink]="item.path" 
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="item.path === '/' ? {exact: true} : {exact: false}">
+          <span class="nav-icon">{{ item.icon }}</span>
+          {{ item.label }}
+        </a>
+      </li>
+      <li>
+        <a routerLink="/tasks/new" routerLinkActive="active">
+          <span class="nav-icon">➕</span>
+          New Task
+        </a>
+      </li>
+    </ul>
+  </div>
+</nav>
