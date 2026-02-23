@@ -1,121 +1,173 @@
 import { Injectable } from '@angular/core';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { Task } from '../../shared/models/task.model';
+import { ApiResponse, TasksResponse, TaskResponse } from '../../shared/models/api-response.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
-  providedIn: 'root' // Makes service available app-wide as singleton
+  providedIn: 'root'
 })
 export class TaskService {
-  // Private property - tasks data
-  // In Step 8, this will be replaced with HTTP calls to backend
-  private tasks: Task[] = [
-    {
-      _id: '1',
-      title: 'Learn Angular Basics',
-      description: 'Understand components, templates, and data binding',
-      status: 'doing',
-      dueDate: new Date('2024-12-31')
-    },
-    {
-      _id: '2',
-      title: 'Build Task App',
-      description: 'Create a complete task management application',
-      status: 'todo',
-      dueDate: new Date('2025-01-15')
-    },
-    {
-      _id: '3',
-      title: 'Master TypeScript',
-      description: 'Learn advanced TypeScript features',
-      status: 'done',
-      dueDate: new Date('2024-12-01')
-    }
-  ];
+  private apiUrl = `${environment.apiUrl}/tasks`;
 
-  // Get all tasks
-  getAllTasks(): Task[] {
-    return [...this.tasks]; // Return copy to prevent direct mutation
-  }
+  // Inject HttpClient via constructor
+  constructor(private http: HttpClient) {}
 
-  // Get task by ID
-  getTaskById(id: string): Task | undefined {
-    return this.tasks.find(task => task._id === id);
-  }
-
-  // Create new task
-  createTask(task: Omit<Task, '_id' | 'createdAt' | 'updatedAt'>): Task {
-    const newTask: Task = {
-      ...task,
-      _id: this.generateId(),
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-    this.tasks.push(newTask);
-    return newTask;
-  }
-
-  // Update existing task
-  updateTask(id: string, updates: Partial<Task>): Task | null {
-    const taskIndex = this.tasks.findIndex(task => task._id === id);
-    if (taskIndex === -1) {
-      return null;
-    }
-
-    this.tasks[taskIndex] = {
-      ...this.tasks[taskIndex],
-      ...updates,
-      _id: id, // Ensure ID doesn't change
-      updatedAt: new Date()
-    };
-
-    return this.tasks[taskIndex];
-  }
-
-  // Delete task
-  deleteTask(id: string): boolean {
-    const taskIndex = this.tasks.findIndex(task => task._id === id);
-    if (taskIndex === -1) {
-      return false;
-    }
-
-    this.tasks.splice(taskIndex, 1);
-    return true;
-  }
-
-  // Update task status
-  updateTaskStatus(id: string, newStatus: 'todo' | 'doing' | 'done'): Task | null {
-    return this.updateTask(id, { status: newStatus });
-  }
-
-  // Search tasks by term
-  searchTasks(searchTerm: string): Task[] {
-    if (!searchTerm.trim()) {
-      return this.getAllTasks();
-    }
-
-    const term = searchTerm.toLowerCase();
-    return this.tasks.filter(task =>
-      task.title.toLowerCase().includes(term) ||
-      task.description.toLowerCase().includes(term)
+  // Get all tasks - Returns Observable
+  getAllTasks(): Observable<Task[]> {
+    return this.http.get<TasksResponse>(this.apiUrl).pipe(
+      map(response => {
+        if (response.success && response.data) {
+          return response.data.map(task => this.mapTaskFromApi(task));
+        }
+        throw new Error(response.error?.message || 'Failed to fetch tasks');
+      }),
+      catchError(this.handleError)
     );
   }
 
-  // Get tasks by status
-  getTasksByStatus(status: 'todo' | 'doing' | 'done'): Task[] {
-    return this.tasks.filter(task => task.status === status);
+  // Get task by ID - Returns Observable
+  getTaskById(id: string): Observable<Task> {
+    return this.http.get<TaskResponse>(`${this.apiUrl}/${id}`).pipe(
+      map(response => {
+        if (response.success && response.data) {
+          return this.mapTaskFromApi(response.data);
+        }
+        throw new Error(response.error?.message || 'Task not found');
+      }),
+      catchError(this.handleError)
+    );
+  }
+
+  // Create new task - Returns Observable
+  createTask(task: Omit<Task, '_id' | 'createdAt' | 'updatedAt'>): Observable<Task> {
+    const payload = {
+      title: task.title,
+      description: task.description || '',
+      status: task.status,
+      dueDate: task.dueDate || null
+    };
+
+    return this.http.post<TaskResponse>(this.apiUrl, payload).pipe(
+      map(response => {
+        if (response.success && response.data) {
+          return this.mapTaskFromApi(response.data);
+        }
+        throw new Error(response.error?.message || 'Failed to create task');
+      }),
+      catchError(this.handleError)
+    );
+  }
+
+  // Update existing task - Returns Observable
+  updateTask(id: string, updates: Partial<Task>): Observable<Task> {
+    const payload = {
+      title: updates.title,
+      description: updates.description,
+      status: updates.status,
+      dueDate: updates.dueDate
+    };
+
+    return this.http.put<TaskResponse>(`${this.apiUrl}/${id}`, payload).pipe(
+      map(response => {
+        if (response.success && response.data) {
+          return this.mapTaskFromApi(response.data);
+        }
+        throw new Error(response.error?.message || 'Failed to update task');
+      }),
+      catchError(this.handleError)
+    );
+  }
+
+  // Delete task - Returns Observable
+  deleteTask(id: string): Observable<boolean> {
+    return this.http.delete<ApiResponse<any>>(`${this.apiUrl}/${id}`).pipe(
+      map(response => {
+        if (response.success) {
+          return true;
+        }
+        throw new Error(response.error?.message || 'Failed to delete task');
+      }),
+      catchError(this.handleError)
+    );
+  }
+
+  // Update task status - Returns Observable
+  updateTaskStatus(id: string, newStatus: 'todo' | 'doing' | 'done'): Observable<Task> {
+    return this.updateTask(id, { status: newStatus });
+  }
+
+  // Search tasks by term - Client-side search (can be moved to backend)
+  searchTasks(searchTerm: string): Observable<Task[]> {
+    return this.getAllTasks().pipe(
+      map(tasks => {
+        if (!searchTerm.trim()) {
+          return tasks;
+        }
+        const term = searchTerm.toLowerCase();
+        return tasks.filter(task =>
+          task.title.toLowerCase().includes(term) ||
+          task.description.toLowerCase().includes(term)
+        );
+      })
+    );
+  }
+
+  // Get tasks by status - Client-side filter
+  getTasksByStatus(status: 'todo' | 'doing' | 'done'): Observable<Task[]> {
+    return this.getAllTasks().pipe(
+      map(tasks => tasks.filter(task => task.status === status))
+    );
   }
 
   // Get task count by status
-  getTaskCountByStatus(status: string): number {
-    return this.tasks.filter(task => task.status === status).length;
+  getTaskCountByStatus(status: string): Observable<number> {
+    return this.getAllTasks().pipe(
+      map(tasks => tasks.filter(task => task.status === status).length)
+    );
   }
 
   // Get total task count
-  getTotalTaskCount(): number {
-    return this.tasks.length;
+  getTotalTaskCount(): Observable<number> {
+    return this.getAllTasks().pipe(
+      map(tasks => tasks.length)
+    );
   }
 
-  // Private helper method to generate IDs
-  private generateId(): string {
-    return Date.now().toString() + Math.random().toString(36).substr(2, 9);
+  // Map API response to Task model
+  private mapTaskFromApi(apiTask: any): Task {
+    return {
+      _id: apiTask._id,
+      title: apiTask.title,
+      description: apiTask.description || '',
+      status: apiTask.status,
+      dueDate: apiTask.dueDate ? new Date(apiTask.dueDate) : null,
+      createdAt: apiTask.createdAt ? new Date(apiTask.createdAt) : undefined,
+      updatedAt: apiTask.updatedAt ? new Date(apiTask.updatedAt) : undefined
+    };
+  }
+
+  // Handle HTTP errors
+  private handleError(error: HttpErrorResponse): Observable<never> {
+    let errorMessage = 'An unknown error occurred';
+    
+    if (error.error instanceof ErrorEvent) {
+      // Client-side error
+      errorMessage = `Error: ${error.error.message}`;
+    } else {
+      // Server-side error
+      if (error.error?.error?.message) {
+        errorMessage = error.error.error.message;
+      } else if (error.error?.message) {
+        errorMessage = error.error.message;
+      } else {
+        errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
+      }
+    }
+    
+    console.error('HTTP Error:', errorMessage);
+    return throwError(() => new Error(errorMessage));
   }
 }

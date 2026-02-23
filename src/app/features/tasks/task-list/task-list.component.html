@@ -3,9 +3,9 @@
     <h1>{{ pageTitle }}</h1>
     <p class="task-summary">
       Total: <strong>{{ totalTasks }}</strong> tasks | 
-      Todo: <strong>{{ getTaskCountByStatus('todo') }}</strong> | 
-      Doing: <strong>{{ getTaskCountByStatus('doing') }}</strong> | 
-      Done: <strong>{{ getTaskCountByStatus('done') }}</strong>
+      Todo: <strong>{{ taskCounts['todo'] }}</strong> | 
+      Doing: <strong>{{ taskCounts['doing'] }}</strong> | 
+      Done: <strong>{{ taskCounts['done'] }}</strong>
     </p>
   </header>
 
@@ -17,6 +17,7 @@
         type="text" 
         id="search"
         [(ngModel)]="searchTerm"
+        (ngModelChange)="onSearchChange()"
         placeholder="Search by title or description..."
         class="search-input">
       <button 

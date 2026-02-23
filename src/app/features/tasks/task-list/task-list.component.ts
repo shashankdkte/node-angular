@@ -33,27 +33,72 @@ export class TaskListComponent implements OnInit {
   // Lifecycle hook: Called after component initialization
   ngOnInit(): void {
     this.loadTasks();
+    this.updateTaskCounts();
+    // Initialize filtered tasks
+    this.filteredTasks = this.tasks;
   }
   
-  // Load tasks from service
+  // Watch search term changes
+  onSearchChange(): void {
+    this.updateFilteredTasks();
+  }
+  
+  // Load tasks from service - Now returns Observable
   loadTasks(): void {
     this.isLoading = true;
-    // Simulate async operation (in Step 8, this will be HTTP call)
-    setTimeout(() => {
-      this.tasks = this.taskService.getAllTasks();
-      this.totalTasks = this.taskService.getTotalTaskCount();
-      this.isLoading = false;
-    }, 500);
+    this.taskService.getAllTasks().subscribe({
+      next: (tasks) => {
+        this.tasks = tasks;
+        this.totalTasks = tasks.length;
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Error loading tasks:', error);
+        alert('Failed to load tasks. Please try again.');
+        this.isLoading = false;
+      }
+    });
   }
   
-  // Filtered tasks based on search term - uses service method
-  get filteredTasks(): Task[] {
-    return this.taskService.searchTasks(this.searchTerm);
+  // Filtered tasks based on search term - Now returns Observable
+  filteredTasks: Task[] = [];
+  
+  // Update filtered tasks when search term changes
+  updateFilteredTasks(): void {
+    if (!this.searchTerm.trim()) {
+      this.filteredTasks = this.tasks;
+      return;
+    }
+    
+    this.taskService.searchTasks(this.searchTerm).subscribe({
+      next: (tasks) => {
+        this.filteredTasks = tasks;
+      },
+      error: (error) => {
+        console.error('Error searching tasks:', error);
+        this.filteredTasks = [];
+      }
+    });
   }
   
-  // Method to get task count by status - uses service method
-  getTaskCountByStatus(status: string): number {
-    return this.taskService.getTaskCountByStatus(status);
+  // Method to get task count by status - Now returns Observable
+  taskCounts: { [key: string]: number } = {
+    todo: 0,
+    doing: 0,
+    done: 0
+  };
+  
+  updateTaskCounts(): void {
+    ['todo', 'doing', 'done'].forEach(status => {
+      this.taskService.getTaskCountByStatus(status).subscribe({
+        next: (count) => {
+          this.taskCounts[status] = count;
+        },
+        error: (error) => {
+          console.error(`Error getting count for ${status}:`, error);
+        }
+      });
+    });
   }
   
   // Method to check if tasks array is empty
@@ -61,42 +106,56 @@ export class TaskListComponent implements OnInit {
     return this.tasks.length > 0;
   }
   
-  // Event handlers - use service methods
+  // Event handlers - use service methods with Observables
   
   // Handle delete event from TaskItemComponent
   onDeleteTask(taskId: string): void {
-    const deleted = this.taskService.deleteTask(taskId);
-    if (deleted) {
-      // Reload tasks after deletion
-      this.tasks = this.taskService.getAllTasks();
-      this.totalTasks = this.taskService.getTotalTaskCount();
-      console.log(`Task ${taskId} deleted`);
+    if (!confirm('Are you sure you want to delete this task?')) {
+      return;
     }
+    
+    this.taskService.deleteTask(taskId).subscribe({
+      next: (success) => {
+        if (success) {
+          // Reload tasks after deletion
+          this.loadTasks();
+          console.log(`Task ${taskId} deleted`);
+        }
+      },
+      error: (error) => {
+        console.error('Error deleting task:', error);
+        alert('Failed to delete task. Please try again.');
+      }
+    });
   }
   
   // Handle edit event from TaskItemComponent
   onEditTask(task: Task): void {
     console.log('Edit task:', task);
-    // In Step 7, this will navigate to edit form
-    alert(`Edit task: ${task.title}\n\nThis will open edit form in Step 7 (Forms)`);
+    // Navigation handled in TaskItemComponent
   }
   
   // Handle status change event from TaskItemComponent
   onStatusChange(event: { taskId: string; newStatus: string }): void {
-    const updated = this.taskService.updateTaskStatus(
+    this.taskService.updateTaskStatus(
       event.taskId,
       event.newStatus as 'todo' | 'doing' | 'done'
-    );
-    
-    if (updated) {
-      // Reload tasks after status update
-      this.tasks = this.taskService.getAllTasks();
-      console.log(`Task ${event.taskId} status changed to ${event.newStatus}`);
-    }
+    ).subscribe({
+      next: (updatedTask) => {
+        // Reload tasks after status update
+        this.loadTasks();
+        console.log(`Task ${event.taskId} status changed to ${event.newStatus}`);
+      },
+      error: (error) => {
+        console.error('Error updating task status:', error);
+        alert('Failed to update task status. Please try again.');
+      }
+    });
   }
   
   // Clear search filter
   clearSearch(): void {
     this.searchTerm = '';
+    this.updateFilteredTasks();
   }
 }

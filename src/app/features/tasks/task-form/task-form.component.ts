@@ -80,20 +80,27 @@ export class TaskFormComponent implements OnInit {
     });
   }
 
-  // Load task and populate form
+  // Load task and populate form - Now returns Observable
   loadTask(id: string): void {
     this.isLoading = true;
-    const task = this.taskService.getTaskById(id);
-    if (task) {
-      // Populate form with task data
-      this.taskForm.patchValue({
-        title: task.title,
-        description: task.description || '',
-        status: task.status,
-        dueDate: task.dueDate ? new Date(task.dueDate) : null
-      });
-    }
-    this.isLoading = false;
+    this.taskService.getTaskById(id).subscribe({
+      next: (task) => {
+        // Populate form with task data
+        this.taskForm.patchValue({
+          title: task.title,
+          description: task.description || '',
+          status: task.status,
+          dueDate: task.dueDate ? new Date(task.dueDate) : null
+        });
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Error loading task:', error);
+        alert('Failed to load task. Please try again.');
+        this.isLoading = false;
+        this.router.navigate(['/tasks']);
+      }
+    });
   }
 
   // Get form controls for easy access in template
@@ -126,7 +133,7 @@ export class TaskFormComponent implements OnInit {
     return 'Invalid value';
   }
 
-  // Handle form submission
+  // Handle form submission - Now uses Observables
   onSubmit(): void {
     // Mark all fields as touched to show validation errors
     if (this.taskForm.invalid) {
@@ -141,28 +148,41 @@ export class TaskFormComponent implements OnInit {
 
     if (this.isEditMode && this.taskId) {
       // Update existing task
-      const updated = this.taskService.updateTask(this.taskId, {
+      this.taskService.updateTask(this.taskId, {
         title: formValue.title.trim(),
         description: formValue.description?.trim() || '',
         status: formValue.status,
         dueDate: formValue.dueDate || null
+      }).subscribe({
+        next: (updatedTask) => {
+          this.router.navigate(['/tasks', this.taskId]);
+          this.isSubmitting = false;
+        },
+        error: (error) => {
+          console.error('Error updating task:', error);
+          alert('Failed to update task. Please try again.');
+          this.isSubmitting = false;
+        }
       });
-      
-      if (updated) {
-        this.router.navigate(['/tasks', this.taskId]);
-      }
     } else {
       // Create new task
-      const newTask = this.taskService.createTask({
+      this.taskService.createTask({
         title: formValue.title.trim(),
         description: formValue.description?.trim() || '',
         status: formValue.status,
         dueDate: formValue.dueDate || null
+      }).subscribe({
+        next: (newTask) => {
+          this.router.navigate(['/tasks', newTask._id]);
+          this.isSubmitting = false;
+        },
+        error: (error) => {
+          console.error('Error creating task:', error);
+          alert('Failed to create task. Please try again.');
+          this.isSubmitting = false;
+        }
       });
-      this.router.navigate(['/tasks', newTask._id]);
     }
-    
-    this.isSubmitting = false;
   }
 
   cancel(): void {

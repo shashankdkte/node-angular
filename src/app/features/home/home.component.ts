@@ -29,8 +29,16 @@ export class HomeComponent implements OnInit {
   
   // Lifecycle hook: Called after component initialization
   ngOnInit(): void {
-    // Use service methods to get data
-    this.taskCount = this.taskService.getTotalTaskCount();
+    // Use service methods to get data - Now returns Observable
+    this.taskService.getTotalTaskCount().subscribe({
+      next: (count) => {
+        this.taskCount = count;
+      },
+      error: (error) => {
+        console.error('Error loading task count:', error);
+      }
+    });
+    
     this.userEmail = this.authService.getUserEmail();
     
     // If user is authenticated, show their email

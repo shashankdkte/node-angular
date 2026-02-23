@@ -47,16 +47,17 @@ export class TaskDetailComponent implements OnInit {
     this.isLoading = true;
     this.error = null;
 
-    // Simulate async operation (in Step 8, this will be HTTP call)
-    setTimeout(() => {
-      const task = this.taskService.getTaskById(id);
-      if (task) {
+    this.taskService.getTaskById(id).subscribe({
+      next: (task) => {
         this.task = task;
-      } else {
-        this.error = 'Task not found';
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Error loading task:', error);
+        this.error = error.message || 'Task not found';
+        this.isLoading = false;
       }
-      this.isLoading = false;
-    }, 300);
+    });
   }
 
   // Navigate back to task list
@@ -73,9 +74,22 @@ export class TaskDetailComponent implements OnInit {
 
   // Delete task and navigate back
   deleteTask(): void {
-    if (this.taskId && confirm('Are you sure you want to delete this task?')) {
-      this.taskService.deleteTask(this.taskId);
-      this.router.navigate(['/tasks']);
+    if (!this.taskId) return;
+    
+    if (!confirm('Are you sure you want to delete this task?')) {
+      return;
     }
+
+    this.taskService.deleteTask(this.taskId).subscribe({
+      next: (success) => {
+        if (success) {
+          this.router.navigate(['/tasks']);
+        }
+      },
+      error: (error) => {
+        console.error('Error deleting task:', error);
+        alert('Failed to delete task. Please try again.');
+      }
+    });
   }
 }
