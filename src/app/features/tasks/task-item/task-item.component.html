@@ -1,1 +1,27 @@
-<p>task-item works!</p>
+<div class="task-item" [ngClass]="getStatusClass()">
+  <div class="task-content">
+    <div class="task-header-row">
+      <h3 class="task-title">{{ task.title }}</h3>
+      <span class="task-number">#{{ taskIndex + 1 }}</span>
+    </div>
+    
+    <p class="task-description">{{ task.description }}</p>
+    
+    <div class="task-meta">
+      <!-- [ngClass] directive: Apply CSS class conditionally based on status -->
+      <span class="task-status" [ngClass]="'status-badge-' + task.status">
+        {{ task.status | uppercase }}
+      </span>
+      
+      <!-- *ngIf directive: Only show due date if it exists -->
+      <span class="task-date" *ngIf="task.dueDate">
+        Due: {{ task.dueDate | date:'shortDate' }}
+      </span>
+      
+      <!-- *ngIf directive: Show overdue warning conditionally -->
+      <span class="overdue-warning" *ngIf="isOverdue()">
+        ⚠️ Overdue
+      </span>
+    </div>
+  </div>
+</div>

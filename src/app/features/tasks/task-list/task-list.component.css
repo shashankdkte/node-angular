@@ -29,6 +29,21 @@
   font-weight: 600;
 }
 
+/* Loading state - shown with *ngIf */
+.loading-container {
+  background: white;
+  border-radius: 8px;
+  padding: 40px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.loading-message {
+  color: #6c757d;
+  font-size: 16px;
+  margin: 0;
+}
+
 .tasks-section {
   background: white;
   border-radius: 8px;
@@ -44,42 +59,21 @@
   padding-bottom: 10px;
 }
 
-.task-item {
-  border: 1px solid #e9ecef;
-  border-radius: 6px;
-  padding: 20px;
-  margin-bottom: 15px;
-  background: #f8f9fa;
-  transition: box-shadow 0.2s;
-}
-
-.task-item:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.task-content h3 {
-  color: #333;
-  margin: 0 0 10px 0;
-  font-size: 18px;
-}
-
-.task-description {
-  color: #666;
-  margin: 0 0 15px 0;
-  line-height: 1.5;
-}
-
-.task-meta {
-  display: flex;
-  gap: 20px;
-  font-size: 14px;
-}
-
-.task-status {
-  color: #495057;
-  font-weight: 500;
-}
-
-.task-date {
+/* Empty state - shown with *ngIf when no tasks */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
   color: #6c757d;
+}
+
+.empty-message {
+  font-size: 16px;
+  margin: 0;
+}
+
+/* Tasks grid - contains items rendered with *ngFor */
+.tasks-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }

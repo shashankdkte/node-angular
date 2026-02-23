@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Task } from '../../../shared/models/task.model';
+import { TaskItemComponent } from '../task-item/task-item.component';
 
 @Component({
   selector: 'app-task-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TaskItemComponent],
   templateUrl: './task-list.component.html',
   styleUrl: './task-list.component.css'
 })
@@ -39,9 +40,15 @@ export class TaskListComponent {
   // Properties for display
   pageTitle = 'My Tasks';
   totalTasks = this.tasks.length;
+  isLoading = false; // For demonstrating *ngIf with loading state
   
   // Method to get task count by status
   getTaskCountByStatus(status: string): number {
     return this.tasks.filter(task => task.status === status).length;
+  }
+  
+  // Method to check if tasks array is empty
+  hasTasks(): boolean {
+    return this.tasks.length > 0;
   }
 }

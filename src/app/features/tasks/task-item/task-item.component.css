@@ -1,0 +1,115 @@
+.task-item {
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 15px;
+  background: white;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.task-item:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+/* [ngClass] examples - Different styles based on status */
+.task-item.status-todo {
+  border-left: 4px solid #6c757d;
+}
+
+.task-item.status-doing {
+  border-left: 4px solid #ffc107;
+  background: #fffbf0;
+}
+
+.task-item.status-done {
+  border-left: 4px solid #28a745;
+  background: #f0f9f4;
+  opacity: 0.9;
+}
+
+.task-content {
+  width: 100%;
+}
+
+.task-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.task-title {
+  color: #333;
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  flex: 1;
+}
+
+.task-number {
+  color: #6c757d;
+  font-size: 12px;
+  font-weight: 500;
+  background: #e9ecef;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.task-description {
+  color: #666;
+  margin: 0 0 15px 0;
+  line-height: 1.5;
+  font-size: 14px;
+}
+
+.task-meta {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  flex-wrap: wrap;
+  font-size: 13px;
+}
+
+/* Status badge styles - used with [ngClass] */
+.status-badge-todo {
+  background: #6c757d;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-weight: 500;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.status-badge-doing {
+  background: #ffc107;
+  color: #333;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-weight: 500;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.status-badge-done {
+  background: #28a745;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-weight: 500;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.task-date {
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.overdue-warning {
+  color: #dc3545;
+  font-weight: 600;
+  font-size: 12px;
+}

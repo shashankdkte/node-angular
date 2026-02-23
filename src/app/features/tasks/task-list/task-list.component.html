@@ -9,50 +9,28 @@
     </p>
   </header>
 
-  <div class="tasks-section">
+  <!-- *ngIf directive: Show loading state conditionally -->
+  <div class="loading-container" *ngIf="isLoading">
+    <p class="loading-message">Loading tasks...</p>
+  </div>
+
+  <!-- *ngIf directive: Show tasks section only if not loading -->
+  <div class="tasks-section" *ngIf="!isLoading">
     <h2>Task List</h2>
     
-    <!-- Demonstrating interpolation with first task -->
-    <!-- We'll learn *ngFor in Step 3 to display all tasks -->
-    <div class="task-item">
-      <div class="task-content">
-        <h3>{{ tasks[0].title }}</h3>
-        <p class="task-description">{{ tasks[0].description }}</p>
-        <div class="task-meta">
-          <span class="task-status">Status: {{ tasks[0].status }}</span>
-          <span class="task-date">
-            Due: {{ tasks[0].dueDate | date:'shortDate' }}
-          </span>
-        </div>
-      </div>
+    <!-- *ngIf directive: Show empty state if no tasks -->
+    <div class="empty-state" *ngIf="!hasTasks()">
+      <p class="empty-message">No tasks found. Create your first task to get started!</p>
     </div>
 
-    <!-- Second task example -->
-    <div class="task-item">
-      <div class="task-content">
-        <h3>{{ tasks[1].title }}</h3>
-        <p class="task-description">{{ tasks[1].description }}</p>
-        <div class="task-meta">
-          <span class="task-status">Status: {{ tasks[1].status }}</span>
-          <span class="task-date" *ngIf="tasks[1].dueDate">
-            Due: {{ tasks[1].dueDate | date:'shortDate' }}
-          </span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Third task example -->
-    <div class="task-item">
-      <div class="task-content">
-        <h3>{{ tasks[2].title }}</h3>
-        <p class="task-description">{{ tasks[2].description }}</p>
-        <div class="task-meta">
-          <span class="task-status">Status: {{ tasks[2].status }}</span>
-          <span class="task-date" *ngIf="tasks[2].dueDate">
-            Due: {{ tasks[2].dueDate | date:'shortDate' }}
-          </span>
-        </div>
-      </div>
+    <!-- *ngFor directive: Loop through tasks array and display each task -->
+    <!-- *ngIf directive: Only show task list if tasks exist -->
+    <div class="tasks-grid" *ngIf="hasTasks()">
+      <app-task-item 
+        *ngFor="let task of tasks; let i = index" 
+        [task]="task"
+        [taskIndex]="i">
+      </app-task-item>
     </div>
   </div>
 </div>
