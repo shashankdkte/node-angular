@@ -5,13 +5,24 @@ import { RouterModule } from '@angular/router';
 import { Task } from '../../../shared/models/task.model';
 import { TaskItemComponent } from '../task-item/task-item.component';
 import { TaskStateService } from '../../../state/task-state.service';
+import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
+import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { ErrorMessageComponent } from '../../../shared/components/error-message/error-message.component';
 import { Observable, Subject, BehaviorSubject, combineLatest } from 'rxjs';
 import { takeUntil, startWith, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-task-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, TaskItemComponent],
+  imports: [
+    CommonModule, 
+    FormsModule, 
+    RouterModule, 
+    TaskItemComponent,
+    LoadingSpinnerComponent,
+    ConfirmDialogComponent,
+    ErrorMessageComponent
+  ],
   templateUrl: './task-list.component.html',
   styleUrl: './task-list.component.css'
 })
@@ -32,6 +43,13 @@ export class TaskListComponent implements OnInit, OnDestroy {
   
   // Two-way binding property for search filter
   searchTerm: string = '';
+  
+  // Confirm dialog state
+  showDeleteDialog = false;
+  taskToDelete: string | null = null;
+  
+  // Error message
+  errorMessage: string = '';
   
   // Subject for unsubscribing (takeUntil pattern)
   private destroy$ = new Subject<void>();
@@ -101,11 +119,18 @@ export class TaskListComponent implements OnInit, OnDestroy {
   // Event handlers - use service methods with Observables and proper subscription management
   
   // Handle delete event from TaskItemComponent
-  // State service handles optimistic updates automatically
+  // Show confirm dialog instead of native confirm
   onDeleteTask(taskId: string): void {
-    if (!confirm('Are you sure you want to delete this task?')) {
-      return;
-    }
+    this.taskToDelete = taskId;
+    this.showDeleteDialog = true;
+  }
+  
+  // Confirm delete action
+  confirmDelete(): void {
+    if (!this.taskToDelete) return;
+    
+    const taskId = this.taskToDelete;
+    this.taskToDelete = null;
     
     this.taskStateService.deleteTask(taskId).pipe(
       takeUntil(this.destroy$) // Auto-unsubscribe when component destroys
@@ -119,9 +144,15 @@ export class TaskListComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         console.error('Error deleting task:', error);
-        alert('Failed to delete task. Please try again.');
+        this.errorMessage = error.message || 'Failed to delete task. Please try again.';
       }
     });
+  }
+  
+  // Cancel delete action
+  cancelDelete(): void {
+    this.taskToDelete = null;
+    this.showDeleteDialog = false;
   }
   
   // Handle edit event from TaskItemComponent
@@ -146,7 +177,7 @@ export class TaskListComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         console.error('Error updating task status:', error);
-        alert('Failed to update task status. Please try again.');
+        this.errorMessage = error.message || 'Failed to update task status. Please try again.';
       }
     });
   }

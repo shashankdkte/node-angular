@@ -34,10 +34,20 @@
     </p>
   </div>
 
-  <!-- *ngIf directive: Show loading state conditionally using async pipe -->
-  <div class="loading-container" *ngIf="isLoading$ | async">
-    <p class="loading-message">Loading tasks...</p>
-  </div>
+  <!-- Error message display -->
+  <app-error-message 
+    *ngIf="errorMessage"
+    [message]="errorMessage"
+    type="error"
+    (dismissed)="errorMessage = ''">
+  </app-error-message>
+
+  <!-- Loading spinner using reusable component -->
+  <app-loading-spinner 
+    *ngIf="isLoading$ | async"
+    message="Loading tasks..."
+    size="medium">
+  </app-loading-spinner>
 
   <!-- *ngIf directive: Show tasks section only if not loading -->
   <div class="tasks-section" *ngIf="!(isLoading$ | async)">
@@ -92,8 +102,20 @@
     
     <ng-template #loadingTasks>
       <div class="empty-state">
-        <p class="empty-message">Loading tasks...</p>
+        <app-loading-spinner message="Loading tasks..." size="small"></app-loading-spinner>
       </div>
     </ng-template>
   </div>
+
+  <!-- Confirm delete dialog -->
+  <app-confirm-dialog
+    [(visible)]="showDeleteDialog"
+    title="Delete Task"
+    message="Are you sure you want to delete this task? This action cannot be undone."
+    confirmText="Delete"
+    cancelText="Cancel"
+    confirmType="danger"
+    (confirm)="confirmDelete()"
+    (cancel)="cancelDelete()">
+  </app-confirm-dialog>
 </div>

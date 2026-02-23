@@ -1,12 +1,20 @@
 <div class="task-detail-container">
-  <!-- Loading state -->
-  <div class="loading" *ngIf="isLoading">
-    <p>Loading task...</p>
-  </div>
+  <!-- Loading spinner -->
+  <app-loading-spinner 
+    *ngIf="isLoading"
+    message="Loading task..."
+    size="medium">
+  </app-loading-spinner>
 
-  <!-- Error state -->
-  <div class="error" *ngIf="error && !isLoading">
-    <p>{{ error }}</p>
+  <!-- Error message -->
+  <app-error-message 
+    *ngIf="error && !isLoading"
+    [message]="error"
+    type="error"
+    [dismissible]="true">
+  </app-error-message>
+  
+  <div *ngIf="error && !isLoading" class="error-actions">
     <button class="btn btn-secondary" (click)="goBack()">Go Back</button>
   </div>
 
@@ -50,4 +58,16 @@
       </div>
     </div>
   </div>
+
+  <!-- Confirm delete dialog -->
+  <app-confirm-dialog
+    [(visible)]="showDeleteDialog"
+    title="Delete Task"
+    message="Are you sure you want to delete this task? This action cannot be undone."
+    confirmText="Delete"
+    cancelText="Cancel"
+    confirmType="danger"
+    (confirm)="confirmDelete()"
+    (cancel)="cancelDelete()">
+  </app-confirm-dialog>
 </div>

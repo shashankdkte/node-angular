@@ -4,11 +4,20 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { TaskStateService } from '../../../state/task-state.service';
 import { TaskService } from '../../../core/services/task.service';
 import { Task } from '../../../shared/models/task.model';
+import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
+import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { ErrorMessageComponent } from '../../../shared/components/error-message/error-message.component';
 
 @Component({
   selector: 'app-task-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [
+    CommonModule, 
+    RouterModule,
+    LoadingSpinnerComponent,
+    ConfirmDialogComponent,
+    ErrorMessageComponent
+  ],
   templateUrl: './task-detail.component.html',
   styleUrl: './task-detail.component.css'
 })
@@ -17,6 +26,7 @@ export class TaskDetailComponent implements OnInit {
   taskId: string | null = null;
   isLoading = false;
   error: string | null = null;
+  showDeleteDialog = false;
 
   // Inject ActivatedRoute to get route parameters
   // Inject Router for navigation
@@ -85,16 +95,18 @@ export class TaskDetailComponent implements OnInit {
     }
   }
 
-  // Delete task and navigate back
-  // State service handles optimistic updates automatically
+  // Delete task - show confirm dialog
   deleteTask(): void {
     if (!this.taskId) return;
+    this.showDeleteDialog = true;
+  }
+  
+  // Confirm delete action
+  confirmDelete(): void {
+    if (!this.taskId) return;
     
-    if (!confirm('Are you sure you want to delete this task?')) {
-      return;
-    }
-
-    this.taskStateService.deleteTask(this.taskId).subscribe({
+    const taskId = this.taskId;
+    this.taskStateService.deleteTask(taskId).subscribe({
       next: (success) => {
         if (success) {
           // State is updated automatically, navigate to list
@@ -103,8 +115,14 @@ export class TaskDetailComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error deleting task:', error);
-        alert('Failed to delete task. Please try again.');
+        this.error = error.message || 'Failed to delete task. Please try again.';
+        this.showDeleteDialog = false;
       }
     });
+  }
+  
+  // Cancel delete action
+  cancelDelete(): void {
+    this.showDeleteDialog = false;
   }
 }
