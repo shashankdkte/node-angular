@@ -18,15 +18,15 @@ graph TB
         end
         
         subgraph "Services"
-            TaskService[TaskService<br/>HttpClient API calls]
-            AuthService[AuthService<br/>Authentication & JWT]
-            TaskStateService[TaskStateService<br/>BehaviorSubject State]
+            TaskService[TaskService - HttpClient API calls]
+            AuthService[AuthService - Authentication & JWT]
+            TaskStateService[TaskStateService - BehaviorSubject State]
         end
         
         subgraph "Core Features"
-            AuthGuard[AuthGuard<br/>Route Protection]
-            AuthInterceptor[AuthInterceptor<br/>JWT Token Injection]
-            ErrorInterceptor[ErrorInterceptor<br/>Error Handling]
+            AuthGuard[AuthGuard - Route Protection]
+            AuthInterceptor[AuthInterceptor - JWT Token Injection]
+            ErrorInterceptor[ErrorInterceptor - Error Handling]
         end
         
         subgraph "Routing"
@@ -36,24 +36,24 @@ graph TB
     
     subgraph "Backend - Node.js/Express"
         subgraph "Routes"
-            AuthRoutes[/api/auth<br/>register, login]
-            TaskRoutes[/api/tasks<br/>CRUD operations]
+            AuthRoutes[/api/auth - register, login]
+            TaskRoutes[/api/tasks - CRUD operations]
         end
         
         subgraph "Middleware"
-            AuthMiddleware[authenticateToken<br/>JWT Verification]
+            AuthMiddleware[authenticateToken - JWT Verification]
             CORS[CORS Middleware]
             JSON[Express JSON Parser]
         end
         
         subgraph "Models"
-            TaskModel[Task Model<br/>Mongoose Schema]
-            UserModel[User Model<br/>Mongoose Schema]
+            TaskModel[Task Model - Mongoose Schema]
+            UserModel[User Model - Mongoose Schema]
         end
     end
     
     subgraph "Database"
-        MongoDB[(MongoDB<br/>Task & User Collections)]
+        MongoDB[(MongoDB - Task & User Collections)]
     end
     
     %% Frontend connections
@@ -204,8 +204,8 @@ graph TD
 graph LR
     subgraph "Express Server"
         Server[server.js]
-        Server --> AuthRoutes[Auth Routes<br/>/api/auth]
-        Server --> TaskRoutes[Task Routes<br/>/api/tasks]
+        Server --> AuthRoutes[Auth Routes - /api/auth]
+        Server --> TaskRoutes[Task Routes - /api/tasks]
         Server --> AuthMW[Auth Middleware]
     end
     
@@ -245,9 +245,9 @@ graph LR
 ```mermaid
 graph TB
     subgraph "TaskStateService"
-        BS[BehaviorSubject<br/>tasks$]
-        LoadingBS[BehaviorSubject<br/>loading$]
-        ErrorBS[BehaviorSubject<br/>error$]
+        BS[BehaviorSubject - tasks$]
+        LoadingBS[BehaviorSubject - loading$]
+        ErrorBS[BehaviorSubject - error$]
     end
     
     subgraph "Components"
