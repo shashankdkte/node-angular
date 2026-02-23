@@ -5,61 +5,82 @@
   </div>
 
   <div class="form-content" *ngIf="!isLoading">
-    <!-- Basic form - will be enhanced with Reactive Forms in Step 7 -->
-    <form (ngSubmit)="saveTask()">
+    <!-- Reactive Form with DevExtreme Components -->
+    <form [formGroup]="taskForm" (ngSubmit)="onSubmit()">
+      
+      <!-- Title Field with Validation -->
       <div class="form-group">
         <label for="title">Title *</label>
-        <input
-          type="text"
-          id="title"
-          [(ngModel)]="task.title"
-          name="title"
-          required
-          class="form-control"
-          placeholder="Enter task title">
+        <dx-text-box
+          formControlName="title"
+          placeholder="Enter task title"
+          [isValid]="!hasError('title', 'required') && !hasError('title', 'minlength')"
+          [validationMessageMode]="'always'">
+        </dx-text-box>
+        <div class="error-message" *ngIf="hasError('title', 'required') || hasError('title', 'minlength')">
+          {{ getErrorMessage('title') }}
+        </div>
       </div>
 
+      <!-- Description Field -->
       <div class="form-group">
         <label for="description">Description</label>
-        <textarea
-          id="description"
-          [(ngModel)]="task.description"
-          name="description"
-          class="form-control"
-          rows="4"
-          placeholder="Enter task description"></textarea>
+        <dx-text-area
+          formControlName="description"
+          placeholder="Enter task description"
+          [height]="120"
+          [maxLength]="500">
+        </dx-text-area>
+        <div class="error-message" *ngIf="hasError('description', 'maxlength')">
+          {{ getErrorMessage('description') }}
+        </div>
+        <div class="char-count" *ngIf="f['description'].value">
+          {{ f['description'].value.length }} / 500 characters
+        </div>
       </div>
 
+      <!-- Status Field -->
       <div class="form-group">
-        <label for="status">Status</label>
-        <select
-          id="status"
-          [(ngModel)]="task.status"
-          name="status"
-          class="form-control">
-          <option value="todo">Todo</option>
-          <option value="doing">Doing</option>
-          <option value="done">Done</option>
-        </select>
+        <label for="status">Status *</label>
+        <dx-select-box
+          formControlName="status"
+          [dataSource]="statusOptions"
+          displayExpr="label"
+          valueExpr="value"
+          placeholder="Select status">
+        </dx-select-box>
+        <div class="error-message" *ngIf="hasError('status', 'required')">
+          {{ getErrorMessage('status') }}
+        </div>
       </div>
 
+      <!-- Due Date Field -->
       <div class="form-group">
         <label for="dueDate">Due Date</label>
-        <input
+        <dx-date-box
+          formControlName="dueDate"
           type="date"
-          id="dueDate"
-          [(ngModel)]="task.dueDate"
-          name="dueDate"
-          class="form-control">
+          placeholder="Select due date"
+          [showClearButton]="true">
+        </dx-date-box>
       </div>
 
+      <!-- Form Actions -->
       <div class="form-actions">
-        <button type="submit" class="btn btn-primary">
-          {{ isEditMode ? 'Update Task' : 'Create Task' }}
-        </button>
+        <dx-button
+          type="default"
+          text="{{ isEditMode ? 'Update Task' : 'Create Task' }}"
+          [disabled]="taskForm.invalid || isSubmitting"
+          (onClick)="onSubmit()">
+        </dx-button>
         <button type="button" class="btn btn-secondary" (click)="cancel()">
           Cancel
         </button>
+      </div>
+
+      <!-- Form Status -->
+      <div class="form-status" *ngIf="taskForm.invalid && (taskForm.dirty || taskForm.touched)">
+        <p class="error-text">Please fix the errors above before submitting.</p>
       </div>
     </form>
   </div>

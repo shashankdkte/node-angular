@@ -27,7 +27,7 @@
 }
 
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 25px;
 }
 
 .form-group label {
@@ -35,26 +35,30 @@
   margin-bottom: 8px;
   font-weight: 500;
   color: #333;
-}
-
-.form-control {
-  width: 100%;
-  padding: 10px 15px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
   font-size: 14px;
-  font-family: inherit;
 }
 
-.form-control:focus {
-  outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+/* DevExtreme components styling */
+::ng-deep .dx-textbox,
+::ng-deep .dx-textarea,
+::ng-deep .dx-selectbox,
+::ng-deep .dx-datebox {
+  width: 100%;
 }
 
-textarea.form-control {
-  resize: vertical;
-  min-height: 100px;
+/* Error message styling */
+.error-message {
+  color: #dc3545;
+  font-size: 12px;
+  margin-top: 5px;
+  display: block;
+}
+
+.char-count {
+  color: #6c757d;
+  font-size: 12px;
+  margin-top: 5px;
+  text-align: right;
 }
 
 .form-actions {
@@ -63,6 +67,11 @@ textarea.form-control {
   margin-top: 30px;
   padding-top: 20px;
   border-top: 1px solid #e9ecef;
+  align-items: center;
+}
+
+::ng-deep .dx-button {
+  margin-right: 10px;
 }
 
 .btn {
@@ -75,15 +84,6 @@ textarea.form-control {
   transition: all 0.2s;
 }
 
-.btn-primary {
-  background-color: #007bff;
-  color: white;
-}
-
-.btn-primary:hover {
-  background-color: #0056b3;
-}
-
 .btn-secondary {
   background-color: #6c757d;
   color: white;
@@ -91,6 +91,20 @@ textarea.form-control {
 
 .btn-secondary:hover {
   background-color: #5a6268;
+}
+
+.form-status {
+  margin-top: 20px;
+  padding: 15px;
+  background: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+}
+
+.error-text {
+  color: #721c24;
+  margin: 0;
+  font-size: 14px;
 }
 
 .loading {
